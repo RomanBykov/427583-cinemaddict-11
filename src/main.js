@@ -327,4 +327,4 @@ const showDetails = () => {
   siteBodyElement.classList.add(`hide-overflow`);
 };
 
-// showDetails();
+showDetails();
