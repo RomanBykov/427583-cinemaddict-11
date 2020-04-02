@@ -322,9 +322,34 @@ render(footerStatisticsElement, createFooterStatisticsTemplate());
 
 const siteBodyElement = document.querySelector(`body`);
 
-const showDetails = () => {
-  render(siteBodyElement, createFilmDetailsTemplate());
-  siteBodyElement.classList.add(`hide-overflow`);
+siteBodyElement.classList.add(`hide-overflow`);
+render(siteBodyElement, createFilmDetailsTemplate());
+
+const filmDetailsElement = siteBodyElement.querySelector(`.film-details`);
+const closeDetailsBtnElement = filmDetailsElement.querySelector(`.film-details__close-btn`);
+
+filmDetailsElement.style.display = `none`;
+
+const hideDetails = () => {
+  filmDetailsElement.style.display = `none`;
+  siteBodyElement.classList.remove(`hide-overflow`);
 };
 
-showDetails();
+const closeDetailsBtnClickHandler = () => {
+  hideDetails();
+  closeDetailsBtnElement.removeEventListener(`click`, closeDetailsBtnClickHandler);
+};
+
+const showDetails = () => {
+  siteBodyElement.classList.add(`hide-overflow`);
+  filmDetailsElement.style.display = `block`;
+  closeDetailsBtnElement.addEventListener(`click`, closeDetailsBtnClickHandler);
+};
+
+document.addEventListener(`click`, (evt) => {
+  const target = evt.target;
+
+  if (target.classList.contains(`film-card__poster`)) {
+    showDetails();
+  }
+});
