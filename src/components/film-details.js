@@ -1,4 +1,4 @@
-import {formatCommentDate, formateReleaseDate} from "../util";
+import {formatCommentDate, formateReleaseDate, createElement} from "../util.js";
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
@@ -32,10 +32,11 @@ const createGenresMarkup = (genres) => {
   }).join(`\n`);
 };
 
-export const createFilmDetailsTemplate = (film) => {
+const createFilmDetailsTemplate = (film) => {
   const {
     poster,
     title,
+    originalTitle,
     rating,
     releaseDate,
     duration,
@@ -75,7 +76,7 @@ export const createFilmDetailsTemplate = (film) => {
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
                   <h3 class="film-details__title">${title}</h3>
-                  <p class="film-details__title-original">Original: The Great Flamarion</p>
+                  <p class="film-details__title-original">Original: ${originalTitle}</p>
                 </div>
 
                 <div class="film-details__rating">
@@ -193,3 +194,26 @@ export const createFilmDetailsTemplate = (film) => {
     </section>`
   );
 };
+
+export default class FilmDetails {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

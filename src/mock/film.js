@@ -1,6 +1,6 @@
-import {getRandomArrayItem, getRandomFloat, getRandomIntInclusive, formatFilmRuntime, getRandomBoolean, getRandomIntFromArray, shuffleArray} from "../util";
-import {descriptions, genres, titles, posters, ageRatings, writers, actors, directors, countries, comments, MONTH_NAMES} from "../const";
-import {generateComments} from "./comment";
+import {getRandomArrayItem, getRandomFloat, getRandomIntInclusive, formatFilmRuntime, getRandomBoolean, getRandomIntFromArray, shuffleArray} from "../util.js";
+import {descriptions, genres, titles, posters, ageRatings, writers, actors, directors, countries, comments, MONTH_NAMES} from "../const.js";
+import {generateComments} from "./comment.js";
 
 export const MAX_RATING = 10;
 export const MAX_MINUTES = 59;
@@ -25,6 +25,7 @@ export const generateFilm = () => {
   return {
     poster: getRandomArrayItem(posters),
     title: getRandomArrayItem(titles),
+    originalTitle: getRandomArrayItem(titles),
     rating: getRandomFloat(MAX_RATING),
     releaseDate: getRandomReleaseDate(),
     duration: formatFilmRuntime(getRandomDuration()),
