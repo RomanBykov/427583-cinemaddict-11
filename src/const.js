@@ -63,3 +63,7 @@ export const actors = [`Erich von Stroheim`, `Mary Beth Hughes`, `Dan Duryea`];
 export const directors = [`Erich von Stroheim`, `Mary Beth Hughes`, `Dan Duryea`, `Anthony Mann`];
 
 export const countries = [`USA`, `Australia`, `France`, `Italy`, `Russia`, `Japan`];
+
+export const userAvatars = [`bitmap@2x.png`];
+
+export const userRatings = [`Movie Buff`];

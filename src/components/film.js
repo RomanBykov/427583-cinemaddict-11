@@ -1,10 +1,12 @@
-const MAX_DESCRIPTION_LENGTH = 140;
+import {createElement} from "../util.js";
 
 const cutDescription = (description) => {
+  const MAX_DESCRIPTION_LENGTH = 140;
+
   return description.length > MAX_DESCRIPTION_LENGTH ? `${description.slice(0, MAX_DESCRIPTION_LENGTH - 1)}…` : description;
 };
 
-export const createFilmCardTemplate = (film) => {
+const createFilmTemplate = (film) => {
   const {
     poster,
     title,
@@ -52,3 +54,26 @@ export const createFilmCardTemplate = (film) => {
     </article>`
   );
 };
+
+export default class Film {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
