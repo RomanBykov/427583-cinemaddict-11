@@ -1,4 +1,4 @@
-import {createElement} from "../util.js";
+import AbstractComponent from "./abstract-component.js";
 
 const createFiltersTemplate = (films) => {
   const watchListCount = films.filter((film) => film.isAdded).length;
@@ -15,25 +15,13 @@ const createFiltersTemplate = (films) => {
   );
 };
 
-export default class Filters {
+export default class Filters extends AbstractComponent {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createFiltersTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from "../util.js";
+import AbstractComponent from "./abstract-component.js";
 
 const cutDescription = (description) => {
   const MAX_DESCRIPTION_LENGTH = 140;
@@ -55,25 +55,17 @@ const createFilmTemplate = (film) => {
   );
 };
 
-export default class Film {
+export default class Film extends AbstractComponent {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setClickHandler(handler) {
+    this.getElement().addEventListener(`click`, handler);
   }
 }

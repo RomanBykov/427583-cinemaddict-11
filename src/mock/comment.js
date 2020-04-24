@@ -1,5 +1,5 @@
 import {reactions, commentAuthors, comments} from "../const";
-import {getRandomArrayItem, getRandomIntInclusive} from "../util";
+import {getRandomArrayItem, getRandomIntInclusive} from "../utils/common";
 
 const getRandomDate = () => {
   const targetDate = new Date();
