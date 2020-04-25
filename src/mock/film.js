@@ -1,4 +1,4 @@
-import {getRandomArrayItem, getRandomFloat, getRandomIntInclusive, formatFilmRuntime, getRandomBoolean, getRandomIntFromArray, shuffleArray} from "../util.js";
+import {getRandomArrayItem, getRandomFloat, getRandomIntInclusive, formatFilmRuntime, getRandomBoolean, getRandomIntFromArray, shuffleArray} from "../utils/common.js";
 import {descriptions, genres, titles, posters, ageRatings, writers, actors, directors, countries, comments, MONTH_NAMES} from "../const.js";
 import {generateComments} from "./comment.js";
 
