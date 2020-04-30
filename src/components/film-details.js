@@ -1,5 +1,6 @@
-import {formatCommentDate, formateReleaseDate} from "../utils/common.js";
-import AbstractComponent from "./abstract-component.js";
+import {formatCommentDate, formateReleaseDate, getRandomArrayItem} from "../utils/common.js";
+import {commentAuthors, reactions} from "../const.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
@@ -33,7 +34,7 @@ const createGenresMarkup = (genres) => {
   }).join(`\n`);
 };
 
-const createFilmDetailsTemplate = (film) => {
+const createFilmDetailsTemplate = (film, options = {}) => {
   const {
     poster,
     title,
@@ -43,19 +44,16 @@ const createFilmDetailsTemplate = (film) => {
     duration,
     genres,
     description,
-    comments,
-    isAdded,
-    isWatched,
-    isFavorite,
     rated,
     director,
     actors,
     writers,
     country
   } = film;
+  const {isAdded, isWatched, isFavorite, viewersComments} = options;
 
-  const commentsCount = comments.length;
-  const commentsMarkup = createCommentsMarkup(comments);
+  const commentsCount = viewersComments.length;
+  const commentsMarkup = createCommentsMarkup(viewersComments);
   const genresMarkup = createGenresMarkup(genres);
   const release = formateReleaseDate(releaseDate);
 
@@ -127,8 +125,8 @@ const createFilmDetailsTemplate = (film) => {
               type="checkbox"
               class="film-details__control-input visually-hidden"
               id="watchlist"
-              name="watchlist
-              ${isAdded ? `checked` : ``}"
+              name="watchlist"
+              ${isAdded ? `checked` : ``}
             >
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
@@ -196,18 +194,112 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-export default class FilmDetails extends AbstractComponent {
+export default class FilmDetails extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
+    this._isAdded = film.isAdded;
+    this._isWatched = film.isWatched;
+    this._isFavorite = film.isFavorite;
+    this._viewersComments = film.comments;
+    this._userComment = {};
+
+    this._closeClickhandler = null;
+    this._emojiClickHandler = null;
+
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film);
+    return createFilmDetailsTemplate(this._film, {
+      isAdded: this._isAdded,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+      viewersComments: this._viewersComments,
+    });
   }
 
-  setClickHandler(handler) {
+  recoveryListeners() {
+    this._subscribeOnEvents();
+    this.setCloseClickHandler(this._closeClickhandler);
+    this.setEmojiClickHandler(this._emojiClickHandler);
+  }
+
+  reset() {
+    const film = this._film;
+
+    this._isAdded = film.isAdded;
+    this._isWatched = film.isWatched;
+    this._isFavorite = film.isFavorite;
+    this._viewersComments = film.comments;
+
+    this.rerender();
+  }
+
+  setCloseClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
+
+    this._closeClickhandler = handler;
+  }
+
+  setEmojiClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__emoji-list`)
+      .addEventListener(`click`, handler);
+
+    this._emojiClickHandler = handler;
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.film-details__control-label--watchlist`)
+      .addEventListener(`click`, () => {
+        this._isAdded = !this._isAdded;
+
+        this.rerender();
+      });
+
+    element.querySelector(`.film-details__control-label--watched`)
+    .addEventListener(`click`, () => {
+      this._isWatched = !this._isWatched;
+
+      this.rerender();
+    });
+
+    element.querySelector(`.film-details__control-label--favorite`)
+    .addEventListener(`click`, () => {
+      this._isFavorite = !this._isFavorite;
+
+      this.rerender();
+    });
+
+    const emojiList = element.querySelector(`.film-details__emoji-list`);
+
+    emojiList.addEventListener(`click`, (evt) => {
+      if (evt.target.matches(`.film-details__emoji-item`)) {
+        this._userComment = {
+          reaction: evt.target.value,
+        };
+      }
+    });
+
+    element.querySelector(`.film-details__comment-input`)
+      .addEventListener(`keyup`, (evt) => {
+        if (evt.ctrlKey && evt.key === `Enter`) {
+          if (!this._userComment.reaction) {
+            this._userComment.reaction = getRandomArrayItem(reactions);
+          }
+
+          this._userComment.comment = evt.target.value;
+          this._userComment.date = new Date();
+          this._userComment.author = getRandomArrayItem(commentAuthors);
+
+          this._viewersComments.push(this._userComment);
+          this._userComment = {};
+
+          this.rerender();
+        }
+      });
   }
 }
