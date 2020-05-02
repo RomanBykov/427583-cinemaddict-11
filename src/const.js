@@ -67,3 +67,9 @@ export const countries = [`USA`, `Australia`, `France`, `Italy`, `Russia`, `Japa
 export const userAvatars = [`bitmap@2x.png`];
 
 export const userRatings = [`Movie Buff`];
+
+export const buttonClassNames = {
+  [`add-to-watchlist`]: `Add to watchlist`,
+  [`mark-as-watched`]: `Mark as watched`,
+  [`favorite`]: `Mark as favorite`
+};
