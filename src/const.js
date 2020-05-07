@@ -73,3 +73,17 @@ export const buttonClassNames = {
   [`mark-as-watched`]: `Mark as watched`,
   [`favorite`]: `Mark as favorite`
 };
+
+export const FilterType = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`,
+};
+
+export const FilterName = {
+  ALL: `All movies`,
+  WATCHLIST: `Watchlist`,
+  HISTORY: `History`,
+  FAVORITES: `Favorites`,
+};

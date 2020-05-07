@@ -17,7 +17,7 @@ export default class MovieController {
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
 
-    this._escKeydownHandler = this._escKeydownHandler.bind(this);
+    this._onEscKeydown = this._onEscKeydown.bind(this);
     this._closeDetailsPopup = this._closeDetailsPopup.bind(this);
     this._openDetailsPopup = this._openDetailsPopup.bind(this);
   }
@@ -29,59 +29,54 @@ export default class MovieController {
     this._filmComponent = new FilmComponent(film);
     this._filmDetailsComponent = new FilmDetailsComponent(film);
 
-    const closeButtonClickHandler = () => {
-      this._closeDetailsPopup();
+    const subscribeOnEvents = (component) => {
+      component.setAddToWatchlistClickHandler(onAddToWatchlistDetails);
+      component.setAddToWatchedClickHandler(onAddToWatchedButtonClick);
+      component.setAddToFavoriteClickHandler(onAddToFavoriteButtonClick);
     };
 
-    const addToWatchlistButtonClickHandler = (evt) => {
-      evt.preventDefault();
-
-      this._onDataChange(film, Object.assign({}, film, {
+    const onAddToWatchlistDetails = () => {
+      this._onDataChange(this, film, Object.assign({}, film, {
         isAdded: !film.isAdded,
       }));
     };
 
-    const markAsWatchedButtonClickHandler = (evt) => {
-      evt.preventDefault();
-
-      this._onDataChange(film, Object.assign({}, film, {
+    const onAddToWatchedButtonClick = () => {
+      this._onDataChange(this, film, Object.assign({}, film, {
         isWatched: !film.isWatched,
       }));
     };
 
-    const markAsFavoriteButtonClickHandler = (evt) => {
-      evt.preventDefault();
-
-      this._onDataChange(film, Object.assign({}, film, {
+    const onAddToFavoriteButtonClick = () => {
+      this._onDataChange(this, film, Object.assign({}, film, {
         isFavorite: !film.isFavorite,
       }));
     };
 
-    const emojiClickHandler = (evt) => {
-      if (evt.target.matches(`.film-details__emoji-item`)) {
-        const emoji = evt.target.value;
-        const commentEmojiELement = this._filmDetailsComponent.getElement()
-          .querySelector(`.film-details__add-emoji-label`);
-
-        clearElement(commentEmojiELement);
-        render(commentEmojiELement, new EmojiComponent(emoji));
+    subscribeOnEvents(this._filmComponent);
+    this._filmComponent.setOpenDetailsClickHandler((evt) => {
+      if (evt.target.tagName === `BUTTON`) {
+        return;
       }
-    };
+      this._openDetailsPopup();
+    });
 
-    const filmClickHandler = (evt) => {
-      const target = evt.target;
+    // const onEmojiChange = (evt) => {
+    //   if (evt.target.matches(`.film-details__emoji-item`)) {
+    //     const emoji = evt.target.value;
+    //     const commentEmojiELement = this._filmDetailsComponent.getElement()
+    //       .querySelector(`.film-details__add-emoji-label`);
 
-      if (target.matches(`.film-card__poster`) || target.matches(`.film-card__title`) || target.matches(`.film-card__comments`)) {
-        this._openDetailsPopup();
-        this._filmDetailsComponent.setCloseClickHandler(closeButtonClickHandler);
-        this._filmDetailsComponent.setEmojiClickHandler(emojiClickHandler);
-      }
-    };
+    //     clearElement(commentEmojiELement);
+    //     render(commentEmojiELement, new EmojiComponent(emoji));
+    //   }
+    // };
 
-    this._filmComponent.setOpenDetailsClickHandler(filmClickHandler);
-    this._filmComponent.setAddToWatchlistButtonClickHandler(addToWatchlistButtonClickHandler);
-    this._filmComponent.setMarkAsWatchedButtonClickHandler(markAsWatchedButtonClickHandler);
-    this._filmComponent.setMarkIsFavoriteButtonClickHandler(markAsFavoriteButtonClickHandler);
+    subscribeOnEvents(this._filmDetailsComponent);
+    this._filmDetailsComponent.setCloseClickHandler(() => {
+      this._closeDetailsPopup();
+    });
+    // this._filmDetailsComponent.setEmojiChangeHandler(onEmojiChange);
 
     render(this._container, this._filmComponent);
 
@@ -93,30 +88,41 @@ export default class MovieController {
     }
   }
 
-  _openDetailsPopup() {
-    append(this._filmDetailsComponent);
-    this._filmDetailsComponent.reset();
-    this._onViewChange();
-    document.addEventListener(`keydown`, this._escKeydownHandler);
-    this._mode = Mode.EDIT;
-  }
-
-  _closeDetailsPopup() {
-    remove(this._filmDetailsComponent);
-    document.removeEventListener(`keydown`, this._escKeydownHandler);
-    this._mode = Mode.DEFAULT;
-  }
-
-  _escKeydownHandler(evt) {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
       this._closeDetailsPopup();
     }
   }
 
-  setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+  destroy() {
+    remove(this._filmComponent);
+    remove(this._filmDetailsComponent);
+    document.removeEventListener(`keydown`, this._onEscKeydown);
+  }
+
+  _closeDetailsPopup() {
+    document.removeEventListener(`keydown`, this._onEscKeydown);
+    this._filmDetailsComponent.reset();
+
+    if (document.contains(this._filmDetailsComponent.getElement())) {
+      remove(this._filmDetailsComponent);
+    }
+
+    this._mode = Mode.DEFAULT;
+  }
+
+  _openDetailsPopup() {
+    this._onViewChange();
+    append(this._filmDetailsComponent);
+    document.addEventListener(`keydown`, this._onEscKeydown);
+
+    this._mode = Mode.EDIT;
+  }
+
+  _onEscKeydown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+    if (isEscKey) {
       this._closeDetailsPopup();
     }
   }

@@ -23,6 +23,7 @@ const getRandomReleaseDate = () => {
 
 export const generateFilm = () => {
   return {
+    id: String(new Date() + Math.random()),
     poster: getRandomArrayItem(posters),
     title: getRandomArrayItem(titles),
     originalTitle: getRandomArrayItem(titles),

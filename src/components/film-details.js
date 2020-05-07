@@ -204,10 +204,12 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._viewersComments = film.comments;
     this._userComment = {};
 
-    this._closeClickhandler = null;
-    this._emojiClickHandler = null;
-
-    this._subscribeOnEvents();
+    this._closeClickHandler = null;
+    // this.setCloseClickHandler(this._closeClickHandler);
+    // this.setEmojiChangeHandler();
+    this.setAddToWatchlistClickHandler();
+    this.setAddToWatchedClickHandler();
+    this.setAddToFavoriteClickHandler();
   }
 
   getTemplate() {
@@ -220,9 +222,11 @@ export default class FilmDetails extends AbstractSmartComponent {
   }
 
   recoveryListeners() {
-    this._subscribeOnEvents();
-    this.setCloseClickHandler(this._closeClickhandler);
-    this.setEmojiClickHandler(this._emojiClickHandler);
+    this.setCloseClickHandler(this._closeClickHandler);
+    // this.setEmojiChangeHandler();
+    this.setAddToWatchlistClickHandler();
+    this.setAddToWatchedClickHandler();
+    this.setAddToFavoriteClickHandler();
   }
 
   reset() {
@@ -240,66 +244,26 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
 
-    this._closeClickhandler = handler;
+    this._closeClickHandler = handler;
   }
 
-  setEmojiClickHandler(handler) {
-    this.getElement().querySelector(`.film-details__emoji-list`)
+  // setEmojiChangeHandler(handler) {
+  //   this.getElement().querySelector(`.film-details__emoji-list`)
+  //     .addEventListener(`change`, handler);
+  // }
+
+  setAddToWatchlistClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--watchlist`)
       .addEventListener(`click`, handler);
-
-    this._emojiClickHandler = handler;
   }
 
-  _subscribeOnEvents() {
-    const element = this.getElement();
+  setAddToWatchedClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--watched`)
+      .addEventListener(`click`, handler);
+  }
 
-    element.querySelector(`.film-details__control-label--watchlist`)
-      .addEventListener(`click`, () => {
-        this._isAdded = !this._isAdded;
-
-        this.rerender();
-      });
-
-    element.querySelector(`.film-details__control-label--watched`)
-    .addEventListener(`click`, () => {
-      this._isWatched = !this._isWatched;
-
-      this.rerender();
-    });
-
-    element.querySelector(`.film-details__control-label--favorite`)
-    .addEventListener(`click`, () => {
-      this._isFavorite = !this._isFavorite;
-
-      this.rerender();
-    });
-
-    const emojiList = element.querySelector(`.film-details__emoji-list`);
-
-    emojiList.addEventListener(`click`, (evt) => {
-      if (evt.target.matches(`.film-details__emoji-item`)) {
-        this._userComment = {
-          reaction: evt.target.value,
-        };
-      }
-    });
-
-    element.querySelector(`.film-details__comment-input`)
-      .addEventListener(`keyup`, (evt) => {
-        if (evt.ctrlKey && evt.key === `Enter`) {
-          if (!this._userComment.reaction) {
-            this._userComment.reaction = getRandomArrayItem(reactions);
-          }
-
-          this._userComment.comment = evt.target.value;
-          this._userComment.date = new Date();
-          this._userComment.author = getRandomArrayItem(commentAuthors);
-
-          this._viewersComments.push(this._userComment);
-          this._userComment = {};
-
-          this.rerender();
-        }
-      });
+  setAddToFavoriteClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--favorite`)
+      .addEventListener(`click`, handler);
   }
 }
