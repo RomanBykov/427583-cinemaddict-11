@@ -9,7 +9,7 @@ export const descriptions = [
 
 export const reactions = [`sleeping`, `smile`, `puke`, `angry`];
 
-export const commentAuthors = [`John Doe`, `Tim Macoveev`];
+export const commentAuthors = [`John Doe`, `Tim Macoveev`, `Samwell Tarly`, `Uncle Ben`, `Salma Hayek`];
 
 export const comments = [
   `Booooooooooring`,

@@ -1,15 +1,16 @@
-import {formatCommentDate, formateReleaseDate, getRandomArrayItem} from "../utils/common.js";
-import {commentAuthors, reactions} from "../const.js";
+import {formatCommentDate, formateReleaseDate} from "../utils/common.js";
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import {encode} from "he";
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
-    const {reaction, author, date, comment} = commentItem;
+    const {id, reaction, author, date, comment: rawComment} = commentItem;
 
     const commentDate = formatCommentDate(date);
+    const comment = encode(rawComment);
 
     return (
-      `<li class="film-details__comment">
+      `<li class="film-details__comment" data-id="${id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${reaction}.png" width="55" height="55" alt="emoji-${reaction}">
         </span>
@@ -50,10 +51,10 @@ const createFilmDetailsTemplate = (film, options = {}) => {
     writers,
     country
   } = film;
-  const {isAdded, isWatched, isFavorite, viewersComments} = options;
+  const {isAdded, isWatched, isFavorite, comments} = options;
 
-  const commentsCount = viewersComments.length;
-  const commentsMarkup = createCommentsMarkup(viewersComments);
+  const commentsCount = comments.length;
+  const commentsMarkup = createCommentsMarkup(comments);
   const genresMarkup = createGenresMarkup(genres);
   const release = formateReleaseDate(releaseDate);
 
@@ -201,12 +202,14 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._isAdded = film.isAdded;
     this._isWatched = film.isWatched;
     this._isFavorite = film.isFavorite;
-    this._viewersComments = film.comments;
-    this._userComment = {};
+    this._comments = film.comments;
 
     this._closeClickHandler = null;
-    // this.setCloseClickHandler(this._closeClickHandler);
-    // this.setEmojiChangeHandler();
+    this._deleteCommentClickHandler = null;
+    this._addCommentSubmitHandler = null;
+    this._onEmojiChange = null;
+
+    this.setEmojiChangeHandler();
     this.setAddToWatchlistClickHandler();
     this.setAddToWatchedClickHandler();
     this.setAddToFavoriteClickHandler();
@@ -217,13 +220,15 @@ export default class FilmDetails extends AbstractSmartComponent {
       isAdded: this._isAdded,
       isWatched: this._isWatched,
       isFavorite: this._isFavorite,
-      viewersComments: this._viewersComments,
+      comments: this._comments,
     });
   }
 
   recoveryListeners() {
     this.setCloseClickHandler(this._closeClickHandler);
-    // this.setEmojiChangeHandler();
+    this.setCommentDeleteClickHandler(this._deleteCommentClickHandler);
+    this.setCommentSubmitHandler(this._addCommentSubmitHandler);
+    this.setEmojiChangeHandler(this._onEmojiChange);
     this.setAddToWatchlistClickHandler();
     this.setAddToWatchedClickHandler();
     this.setAddToFavoriteClickHandler();
@@ -235,7 +240,7 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._isAdded = film.isAdded;
     this._isWatched = film.isWatched;
     this._isFavorite = film.isFavorite;
-    this._viewersComments = film.comments;
+    this._comments = film.comments;
 
     this.rerender();
   }
@@ -247,10 +252,12 @@ export default class FilmDetails extends AbstractSmartComponent {
     this._closeClickHandler = handler;
   }
 
-  // setEmojiChangeHandler(handler) {
-  //   this.getElement().querySelector(`.film-details__emoji-list`)
-  //     .addEventListener(`change`, handler);
-  // }
+  setEmojiChangeHandler(handler) {
+    this.getElement().querySelector(`.film-details__emoji-list`)
+      .addEventListener(`change`, handler);
+
+    this._onEmojiChange = handler;
+  }
 
   setAddToWatchlistClickHandler(handler) {
     this.getElement().querySelector(`.film-details__control-label--watchlist`)
@@ -265,5 +272,19 @@ export default class FilmDetails extends AbstractSmartComponent {
   setAddToFavoriteClickHandler(handler) {
     this.getElement().querySelector(`.film-details__control-label--favorite`)
       .addEventListener(`click`, handler);
+  }
+
+  setCommentDeleteClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__comments-list`)
+      .addEventListener(`click`, handler);
+
+    this._deleteCommentClickHandler = handler;
+  }
+
+  setCommentSubmitHandler(handler) {
+    this.getElement().querySelector(`.film-details__comment-input`)
+      .addEventListener(`keydown`, handler);
+
+    this._addCommentSubmitHandler = handler;
   }
 }

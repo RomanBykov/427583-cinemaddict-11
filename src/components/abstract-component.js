@@ -22,6 +22,8 @@ export default class AbstractComponent {
   }
 
   removeElement() {
+    // console.log(`this._element`);
+    // debugger;
     this._element = null;
   }
 }

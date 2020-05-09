@@ -7,7 +7,6 @@ import StatsComponent from "./components/stats.js";
 import UserProfileComponent from "./components/user-profile.js";
 import PageController from "./controllers/page.js";
 import FilmsModel from "./models/movies.js";
-import CommentsModel from "./models/comments.js";
 import {generateFilms} from "./mock/film.js";
 import {generateUser} from "./mock/user.js";
 import {render} from "./utils/render.js";
