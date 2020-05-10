@@ -2,7 +2,7 @@ import FilmsCountComponent from "./components/films-count.js";
 import FilmsComponent from "./components/films.js";
 import FilterController from "./controllers/filter.js";
 import NavigationComponent from "./components/navigation.js";
-import SortComponent from "./components/sort.js";
+// import SortComponent from "./components/sort.js";
 import StatsComponent from "./components/stats.js";
 import UserProfileComponent from "./components/user-profile.js";
 import PageController from "./controllers/page.js";
@@ -30,7 +30,7 @@ const filterController = new FilterController(navigationComponent.getElement(), 
 
 filterController.render();
 render(navigationComponent.getElement(), new StatsComponent());
-render(siteMainElement, new SortComponent());
+// render(siteMainElement, new SortComponent());
 
 const filmsComponent = new FilmsComponent();
 render(siteMainElement, filmsComponent);
