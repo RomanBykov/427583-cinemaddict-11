@@ -1,8 +1,4 @@
-import {MONTH_NAMES} from "../const.js";
-
-const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
-};
+import moment from "moment";
 
 export const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
@@ -27,28 +23,15 @@ export const getRandomArrayItem = (array) => {
 };
 
 export const formatFilmRuntime = (date) => {
-  const hours = date.getHours() % 12 ? `${date.getHours() % 12}h` : ``;
-  const minutes = date.getMinutes() ? `${date.getMinutes()}m` : ``;
-
-  return `${hours} ${minutes}`;
+  return moment(date).format(`h[h] mm[m]`);
 };
 
 export const formatCommentDate = (date) => {
-  const hours = date.getUTCHours() % 24;
-  const minutes = castTimeFormat(date.getMinutes());
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  return `${year}/${month}/${day} ${hours}:${minutes}`;
+  return moment(date).format(`YYYY/MM/DD hh:mm`);
 };
 
 export const formateReleaseDate = (date) => {
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  return `${day} ${MONTH_NAMES[month]} ${year}`;
+  return moment(date).format(`DD MMMM YYYY`);
 };
 
 export const shuffleArray = (array) => {
