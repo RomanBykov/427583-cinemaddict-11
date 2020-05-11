@@ -16,6 +16,7 @@ const getRandomDate = () => {
 
 const generateComment = () => {
   return {
+    id: String(Math.random() + new Date()),
     reaction: getRandomArrayItem(reactions),
     author: getRandomArrayItem(commentAuthors),
     date: getRandomDate(),

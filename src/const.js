@@ -9,7 +9,7 @@ export const descriptions = [
 
 export const reactions = [`sleeping`, `smile`, `puke`, `angry`];
 
-export const commentAuthors = [`John Doe`, `Tim Macoveev`];
+export const commentAuthors = [`John Doe`, `Tim Macoveev`, `Samwell Tarly`, `Uncle Ben`, `Salma Hayek`];
 
 export const comments = [
   `Booooooooooring`,
@@ -72,4 +72,18 @@ export const buttonClassNames = {
   [`add-to-watchlist`]: `Add to watchlist`,
   [`mark-as-watched`]: `Mark as watched`,
   [`favorite`]: `Mark as favorite`
+};
+
+export const FilterType = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`,
+};
+
+export const FilterName = {
+  ALL: `All movies`,
+  WATCHLIST: `Watchlist`,
+  HISTORY: `History`,
+  FAVORITES: `Favorites`,
 };
