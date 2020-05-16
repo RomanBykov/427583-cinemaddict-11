@@ -7,7 +7,7 @@ import {getRandomArrayItem} from "../utils/common.js";
 
 export const Mode = {
   DEFAULT: `default`,
-  EDIT: `edit`
+  EDIT: `edit`,
 };
 
 export default class MovieController {
@@ -38,21 +38,18 @@ export default class MovieController {
     this._viewersComments = film.comments;
 
     const onAddToWatchlistDetails = () => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        isAdded: !film.isAdded,
-      }));
+      this._onDataChange(this, film, Object.assign({}, film, film.userDetails.watchlist = !film.userDetails.watchlist));
     };
 
     const onAddToWatchedButtonClick = () => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        isWatched: !film.isWatched,
-      }));
+      this._onDataChange(this, film, Object.assign({}, film,
+          film.userDetails.alreadyWatched = !film.userDetails.alreadyWatched,
+          film.userDetails.watchingDate = new Date()
+      ));
     };
 
     const onAddToFavoriteButtonClick = () => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        isFavorite: !film.isFavorite,
-      }));
+      this._onDataChange(this, film, Object.assign({}, film, film.userDetails.favorite = !film.userDetails.favorite));
     };
 
     const subscribeOnEvents = (component) => {

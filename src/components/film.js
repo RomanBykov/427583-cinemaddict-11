@@ -1,5 +1,6 @@
-import AbstractComponent from "./abstract-component.js";
-import {buttonClassNames} from "../const.js";
+import AbstractComponent from "./abstract-component";
+import {buttonClassNames} from "../const";
+import {formatFilmRuntime} from "../utils/common";
 
 const cutDescription = (description) => {
   const MAX_DESCRIPTION_LENGTH = 140;
@@ -26,17 +27,20 @@ const createFilmTemplate = (film) => {
     duration,
     genres,
     description,
-    comments
+    comments,
+    userDetails,
   } = film;
+
+  const formatedRuntime = formatFilmRuntime(duration);
 
   const commentsCount = comments.length;
   const genre = genres[0];
   const release = releaseDate.getFullYear();
   const shortDescription = cutDescription(description);
 
-  const addToWatchButton = createButtonMarkup(`add-to-watchlist`, film.isAdded);
-  const markAsWatchedButton = createButtonMarkup(`mark-as-watched`, film.isWatched);
-  const markAsFavoriteButton = createButtonMarkup(`favorite`, film.isFavorite);
+  const addToWatchButton = createButtonMarkup(`add-to-watchlist`, userDetails.watchlist);
+  const markAsWatchedButton = createButtonMarkup(`mark-as-watched`, userDetails.alreadyWatched);
+  const markAsFavoriteButton = createButtonMarkup(`favorite`, userDetails.favorite);
 
   return (
     `<article class="film-card">
@@ -44,7 +48,7 @@ const createFilmTemplate = (film) => {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${release}</span>
-        <span class="film-card__duration">${duration}</span>
+        <span class="film-card__duration">${formatedRuntime}</span>
         <span class="film-card__genre">${genre}</span>
       </p>
       <img src="./images/posters/${poster}" alt="" class="film-card__poster">

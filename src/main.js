@@ -2,8 +2,8 @@ import FilmsCountComponent from "./components/films-count.js";
 import FilmsComponent from "./components/films.js";
 import FilterController from "./controllers/filter.js";
 import NavigationComponent from "./components/navigation.js";
-// import SortComponent from "./components/sort.js";
-import StatsComponent from "./components/stats.js";
+import StatsButtonComponent from "./components/stats-button.js";
+import StatisticsController from "./controllers/statistics.js";
 import UserProfileComponent from "./components/user-profile.js";
 import PageController from "./controllers/page.js";
 import FilmsModel from "./models/movies.js";
@@ -29,8 +29,8 @@ render(siteMainElement, navigationComponent);
 const filterController = new FilterController(navigationComponent.getElement(), filmsModel);
 
 filterController.render();
-render(navigationComponent.getElement(), new StatsComponent());
-// render(siteMainElement, new SortComponent());
+const statsButtonComponent = new StatsButtonComponent();
+render(navigationComponent.getElement(), statsButtonComponent);
 
 const filmsComponent = new FilmsComponent();
 render(siteMainElement, filmsComponent);
@@ -38,6 +38,22 @@ render(siteMainElement, filmsComponent);
 const pageController = new PageController(filmsComponent, filmsModel);
 pageController.render();
 
+const statisticsController = new StatisticsController(siteMainElement, filmsModel.getWatchedFilms());
+statisticsController.render();
+statisticsController.hide();
+
 const footerFilmsCountElement = document.querySelector(`.footer__statistics`);
 const totalFilmsCount = films.length;
 render(footerFilmsCountElement, new FilmsCountComponent(totalFilmsCount));
+
+statsButtonComponent.setOnClickHandler((evt) => {
+  evt.preventDefault();
+
+  if (pageController.isVisible()) {
+    pageController.hide();
+    statisticsController.show();
+  } else {
+    pageController.show();
+    statisticsController.hide();
+  }
+});

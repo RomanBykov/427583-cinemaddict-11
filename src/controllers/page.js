@@ -1,12 +1,12 @@
-import FilmsListContainerComponent from "../components/films-list-container.js";
-import FilmsListComponent from "../components/films-list.js";
-import MostCommentedFilmsComponent from "../components/most-commented-films.js";
-import NoDataComponent from "../components/no-data.js";
-import ShowMoreButtonComponent from "../components/show-more-button.js";
-import TopRatedFilmsComponent from "../components/top-rated-films.js";
-import SortComponent, {SortType} from "../components/sort.js";
-import {render, remove} from "../utils/render.js";
-import MovieController, {Mode as MovieControllerMode} from "./movie.js";
+import FilmsListContainerComponent from "../components/films-list-container";
+import FilmsListComponent from "../components/films-list";
+import MostCommentedFilmsComponent from "../components/most-commented-films";
+import NoDataComponent from "../components/no-data";
+import ShowMoreButtonComponent from "../components/show-more-button";
+import TopRatedFilmsComponent from "../components/top-rated-films";
+import SortComponent, {SortType} from "../components/sort";
+import {render, remove} from "../utils/render";
+import MovieController, {Mode as MovieControllerMode} from "./movie";
 
 const EXTRA_FILM_CARDS_COUNT = 2;
 const SHOWING_FILMS_COUNT_ON_START = 5;
@@ -40,12 +40,15 @@ const getSortedFilms = (films, sortType, from, to) => {
   return sortedFilms.slice(from, to);
 };
 
+
 export default class PageController {
   constructor(container, filmsModel) {
     this._container = container;
     this._filmsModel = filmsModel;
 
     this._showedFilmsControllers = [];
+
+    this._isVisible = true;
 
     this._showingFilmsCount = SHOWING_FILMS_COUNT_ON_START;
 
@@ -121,6 +124,14 @@ export default class PageController {
     renderMostCommentedFilms();
   }
 
+  isVisible() {
+    return this._isVisible;
+  }
+
+  _toggleVisibility() {
+    this._isVisible = !this._isVisible;
+  }
+
   _removeFilms() {
     this._showedFilmsControllers.forEach((filmController) => filmController.destroy());
     this._showedFilmsControllers = [];
@@ -194,5 +205,15 @@ export default class PageController {
 
   _onFilterChange() {
     this._updateFilms(SHOWING_FILMS_COUNT_ON_START);
+  }
+
+  show() {
+    this._container.show();
+    this._toggleVisibility();
+  }
+
+  hide() {
+    this._container.hide();
+    this._toggleVisibility();
   }
 }

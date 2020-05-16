@@ -1,4 +1,5 @@
 import moment from "moment";
+import "moment-duration-format";
 
 export const getRandomIntInclusive = (min, max) => {
   min = Math.ceil(min);
@@ -22,8 +23,8 @@ export const getRandomArrayItem = (array) => {
   return array[getRandomIntInclusive(0, array.length - 1)];
 };
 
-export const formatFilmRuntime = (date) => {
-  return moment(date).format(`h[h] mm[m]`);
+export const formatFilmRuntime = (runtime) => {
+  return moment.duration(runtime, `minutes`).format(`h[h] mm[m]`);
 };
 
 export const formatCommentDate = (date) => {
@@ -42,3 +43,6 @@ export const shuffleArray = (array) => {
   return array;
 };
 
+export const getKeyByValue = (object, value) => {
+  return Object.keys(object).find((key) => object[key] === value);
+};
