@@ -92,7 +92,7 @@ export const HIDDEN_CLASS = `visually-hidden`;
 
 // TODO: придумать значение получше для ALL
 export const Period = {
-  ALL: 365,
+  ALL: 6365,
   TODAY: 1,
   WEEK: 7,
   MONTH: 30,

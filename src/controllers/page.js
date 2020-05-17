@@ -210,6 +210,7 @@ export default class PageController {
   show() {
     this._container.show();
     this._toggleVisibility();
+    this._updateFilms(SHOWING_FILMS_COUNT_ON_START);
   }
 
   hide() {

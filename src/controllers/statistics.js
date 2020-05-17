@@ -54,14 +54,19 @@ export default class StatisticsController {
     this._genresChart = this._applyChart(chartContainer, this._genres);
   }
 
-  // TODO: Сделать перерендер (обновление) статистки при скрытии/показе и добавлении фильмов в просмотренные
   hide() {
     this._statisticsComponent.hide();
   }
 
   show() {
+    this.setToDefault();
     this.render();
     this._statisticsComponent.show();
+  }
+
+  setToDefault() {
+    this._periodCount = Period.ALL;
+    this._filterName = StatFilterType.ALL;
   }
 
   _renderStatisticsComponent() {
