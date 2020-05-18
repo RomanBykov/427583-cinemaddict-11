@@ -35,7 +35,7 @@ const createGenresMarkup = (genres) => {
   }).join(`\n`);
 };
 
-const createFilmDetailsTemplate = (film, options = {}) => {
+const createFilmDetailsTemplate = (film) => {
   const {
     poster,
     title,
@@ -49,9 +49,14 @@ const createFilmDetailsTemplate = (film, options = {}) => {
     director,
     actors,
     writers,
-    country
+    country,
+    comments,
+    userDetails: {
+      watchlist,
+      alreadyWatched,
+      favorite,
+    },
   } = film;
-  const {isAdded, isWatched, isFavorite, comments} = options;
 
   const commentsCount = comments.length;
   const commentsMarkup = createCommentsMarkup(comments);
@@ -127,7 +132,7 @@ const createFilmDetailsTemplate = (film, options = {}) => {
               class="film-details__control-input visually-hidden"
               id="watchlist"
               name="watchlist"
-              ${isAdded ? `checked` : ``}
+              ${watchlist ? `checked` : ``}
             >
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
@@ -136,7 +141,7 @@ const createFilmDetailsTemplate = (film, options = {}) => {
               class="film-details__control-input visually-hidden"
               id="watched"
               name="watched"
-              ${isWatched ? `checked` : ``}
+              ${alreadyWatched ? `checked` : ``}
             >
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
@@ -145,7 +150,7 @@ const createFilmDetailsTemplate = (film, options = {}) => {
               class="film-details__control-input visually-hidden"
               id="favorite"
               name="favorite"
-              ${isFavorite ? `checked` : ``}
+              ${favorite ? `checked` : ``}
             >
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
@@ -199,9 +204,11 @@ export default class FilmDetails extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
-    this._isAdded = film.isAdded;
-    this._isWatched = film.isWatched;
-    this._isFavorite = film.isFavorite;
+    this._userDetails = this._film.userDetails;
+    this._watchlist = this._userDetails.watchlist;
+    this._alreadyWatched = this._userDetails.alreadyWatched;
+    this._watchingDate = this._userDetails.watchingDate;
+    this._favorite = this._userDetails.favorite;
     this._comments = film.comments;
 
     this._closeClickHandler = null;
@@ -217,9 +224,12 @@ export default class FilmDetails extends AbstractSmartComponent {
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film, {
-      isAdded: this._isAdded,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
+      userDetails: {
+        watchlist: this._watchlist,
+        alreadyWatched: this._alreadyWatched,
+        watchingDate: this._watchingDate,
+        favorite: this._favorite,
+      },
       comments: this._comments,
     });
   }
@@ -236,10 +246,12 @@ export default class FilmDetails extends AbstractSmartComponent {
 
   reset() {
     const film = this._film;
+    const userDetails = film.userDetails;
 
-    this._isAdded = film.isAdded;
-    this._isWatched = film.isWatched;
-    this._isFavorite = film.isFavorite;
+    this._watchlist = userDetails.watchlist;
+    this._alreadyWatched = userDetails._alreadyWatched;
+    this._watchingDate = userDetails._watchingDate;
+    this._favorite = userDetails.favorite;
     this._comments = film.comments;
 
     this.rerender();

@@ -1,4 +1,5 @@
-import {createElement} from "../utils/render.js";
+import {createElement} from "../utils/render";
+import {HIDDEN_CLASS} from "../const";
 
 export default class AbstractComponent {
   constructor() {
@@ -22,8 +23,18 @@ export default class AbstractComponent {
   }
 
   removeElement() {
-    // console.log(`this._element`);
-    // debugger;
     this._element = null;
+  }
+
+  show() {
+    if (this._element) {
+      this._element.classList.remove(HIDDEN_CLASS);
+    }
+  }
+
+  hide() {
+    if (this._element) {
+      this._element.classList.add(HIDDEN_CLASS);
+    }
   }
 }

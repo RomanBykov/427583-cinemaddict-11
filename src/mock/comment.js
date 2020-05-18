@@ -20,7 +20,7 @@ const generateComment = () => {
     reaction: getRandomArrayItem(reactions),
     author: getRandomArrayItem(commentAuthors),
     date: getRandomDate(),
-    comment: getRandomArrayItem(comments)
+    comment: getRandomArrayItem(comments),
   };
 };
 

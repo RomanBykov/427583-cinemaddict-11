@@ -87,3 +87,24 @@ export const FilterName = {
   HISTORY: `History`,
   FAVORITES: `Favorites`,
 };
+
+export const HIDDEN_CLASS = `visually-hidden`;
+
+// TODO: придумать значение получше для ALL
+export const Period = {
+  ALL: 6365,
+  TODAY: 1,
+  WEEK: 7,
+  MONTH: 30,
+  YEAR: 365
+};
+
+export const StatFilterType = {
+  ALL: `all-time`,
+  TODAY: `today`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`,
+};
+
+export const STAT_FILTER_VALUES = Object.values(StatFilterType);

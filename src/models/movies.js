@@ -53,4 +53,8 @@ export default class Movies {
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());
   }
+
+  getWatchedFilms() {
+    return this._films.filter((film) => film.userDetails.alreadyWatched);
+  }
 }
