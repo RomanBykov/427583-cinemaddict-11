@@ -44,6 +44,24 @@ export default class API {
       .then(MovieModel.parseMovie);
   }
 
+  addComment(movieID, commentData) {
+    return this._load({
+      url: `comments/${movieID}`,
+      method: Method.POST,
+      body: JSON.stringify(commentData),
+      headers: new Headers({"Content-Type": `application/json`}),
+    })
+      .then((response) => response.json());
+  }
+
+  deleteComment(commentID) {
+    return this._load({
+      url: `comments/${commentID}`,
+      method: Method.DELETE,
+      headers: new Headers({"Content-Type": `application/json`}),
+    });
+  }
+
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 

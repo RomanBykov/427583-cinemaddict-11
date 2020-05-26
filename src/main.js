@@ -8,8 +8,8 @@ import PageController from "./controllers/page";
 import StatsButtonComponent from "./components/stats-button";
 import StatisticsController from "./controllers/statistics";
 import UserProfileComponent from "./components/user-profile";
-import {generateUser} from "./mock/user";
 import {render} from "./utils/render";
+import {getUserRank} from "./utils/common";
 
 const AUTHORIZATION = `Basic NJCnjdNdcKLKDCNjkncjkdsnjdnjkcnjkNCJKD=`;
 const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict/`;
@@ -18,7 +18,6 @@ let totalMoviesCount = 0;
 
 const api = new API(END_POINT, AUTHORIZATION);
 
-const user = generateUser();
 const siteHeaderElement = document.querySelector(`.header`);
 const footerMoviesCountElement = document.querySelector(`.footer__statistics`);
 const siteMainElement = document.querySelector(`.main`);
@@ -31,7 +30,6 @@ const moviesComponent = new MoviesComponent();
 const pageController = new PageController(moviesComponent, moviesModel, api);
 
 
-render(siteHeaderElement, new UserProfileComponent(user));
 render(siteMainElement, navigationComponent);
 filterController.render();
 render(navigationComponent.getElement(), statsButtonComponent);
@@ -47,8 +45,12 @@ api.getMovies()
 
     totalMoviesCount = movies.length;
 
-    const statisticsController = new StatisticsController(siteMainElement, moviesModel.getWatchedMovies());
+    const watchedMovies = moviesModel.getWatchedMovies();
+    const userRank = getUserRank(watchedMovies.length);
+
+    const statisticsController = new StatisticsController(siteMainElement, moviesModel.getWatchedMovies(), userRank);
     render(footerMoviesCountElement, new MoviesCountComponent(totalMoviesCount));
+    render(siteHeaderElement, new UserProfileComponent(userRank));
 
     pageController.removeLoading();
     pageController.renderLoadedMovies();

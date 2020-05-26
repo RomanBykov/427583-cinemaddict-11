@@ -28,9 +28,10 @@ const countGenres = (genres) => {
 
 
 export default class StatisticsController {
-  constructor(container, moviesModel) {
+  constructor(container, moviesModel, userRank) {
     this._container = container;
     this._movies = moviesModel;
+    this._userRank = userRank;
 
     this._genres = [];
 
@@ -86,7 +87,7 @@ export default class StatisticsController {
       filter: this._filterName
     };
 
-    this._statisticsComponent = new StatisticsComponent(filteredMovies, statisticsOptions);
+    this._statisticsComponent = new StatisticsComponent(filteredMovies, statisticsOptions, this._userRank);
     this._statisticsComponent.setStatFilterChangeHandler(this._onFilterChange);
     render(container, this._statisticsComponent);
   }
