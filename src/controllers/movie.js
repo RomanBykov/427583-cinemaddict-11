@@ -1,173 +1,240 @@
-import FilmDetailsComponent from "../components/film-details.js";
-import FilmComponent from "../components/film.js";
-import EmojiComponent from "../components/emoji.js";
-import {remove, append, render, clearElement, replace} from "../utils/render.js";
-import {commentAuthors, reactions} from "../const.js";
-import {getRandomArrayItem} from "../utils/common.js";
-
-export const Mode = {
-  DEFAULT: `default`,
-  EDIT: `edit`,
-};
+// import EmojiComponent from "../components/emoji";
+import MovieComponent from "../components/movie";
+import MovieDetailsComponent from "../components/movie-details";
+import MovieModel from "../models/movie";
+import {remove, append, render, replace} from "../utils/render";
+import {reactions} from "../const";
+// import {remove, append, render, clearElement, replace} from "../utils/render";
+// import {commentAuthors, reactions} from "../const";
+// import {getRandomArrayItem} from "../utils/common";
 
 export default class MovieController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, api) {
     this._container = container;
-    this._filmComponent = null;
-    this._filmDetailsComponent = null;
+    this._movieComponent = null;
+    this._movieDetailsComponent = null;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
 
-    this._mode = Mode.DEFAULT;
+    this._api = api;
 
     this._viewersComments = [];
     this._commentEmoji = reactions[0];
+
+    this._movie = null;
+    this._movieID = null;
+
+    this._openDetailsPopup = this._openDetailsPopup.bind(this);
 
     this._onEscKeydown = this._onEscKeydown.bind(this);
     this._closeDetailsPopup = this._closeDetailsPopup.bind(this);
   }
 
-  render(film, mode) {
-    this._mode = mode;
-    const oldFilmComponent = this._filmComponent;
-    const oldFilmDetailsComponent = this._filmDetailsComponent;
+  render(movie) {
+    this._movie = movie;
+    this._movieID = movie.id;
+    const oldMovieComponent = this._movieComponent;
 
-    this._filmComponent = new FilmComponent(film);
-    this._filmDetailsComponent = new FilmDetailsComponent(film);
+    this._movieComponent = new MovieComponent(movie);
 
-    this._viewersComments = film.comments;
+    this._movieComponent.setAddToWatchlistClickHandler((evt) => {
+      evt.preventDefault();
+      const newMovie = MovieModel.clone(this._movie);
+      newMovie.userDetails.watchlist = !this._movie.userDetails.watchlist;
+      this._onDataChange(this, this._movie, newMovie);
+    });
 
-    const onAddToWatchlistDetails = () => {
-      this._onDataChange(this, film, Object.assign({}, film, film.userDetails.watchlist = !film.userDetails.watchlist));
-    };
+    this._movieComponent.setAddToWatchedClickHandler((evt) => {
+      evt.preventDefault();
+      const newMovie = MovieModel.clone(this._movie);
+      newMovie.userDetails.alreadyWatched = !this._movie.userDetails.alreadyWatched;
+      newMovie.userDetails.watchingDate = new Date();
+      this._onDataChange(this, this._movie, newMovie);
+    });
 
-    const onAddToWatchedButtonClick = () => {
-      this._onDataChange(this, film, Object.assign({}, film,
-          film.userDetails.alreadyWatched = !film.userDetails.alreadyWatched,
-          film.userDetails.watchingDate = new Date()
-      ));
-    };
+    this._movieComponent.setAddToFavoriteClickHandler((evt) => {
+      evt.preventDefault();
+      const newMovie = MovieModel.clone(this._movie);
+      newMovie.userDetails.favorite = !this._movie.userDetails.favorite;
+      this._onDataChange(this, this._movie, newMovie);
+    });
 
-    const onAddToFavoriteButtonClick = () => {
-      this._onDataChange(this, film, Object.assign({}, film, film.userDetails.favorite = !film.userDetails.favorite));
-    };
-
-    const subscribeOnEvents = (component) => {
-      component.setAddToWatchlistClickHandler(onAddToWatchlistDetails);
-      component.setAddToWatchedClickHandler(onAddToWatchedButtonClick);
-      component.setAddToFavoriteClickHandler(onAddToFavoriteButtonClick);
-    };
-
-    subscribeOnEvents(this._filmComponent);
-
-    this._filmComponent.setOpenDetailsClickHandler((evt) => {
+    this._movieComponent.setOpenDetailsClickHandler((evt) => {
       if (evt.target.tagName === `BUTTON`) {
         return;
       }
-      openDetailsPopup();
+
+      this._openDetailsPopup();
     });
 
-    const onEmojiChange = (evt) => {
-      if (evt.target.matches(`.film-details__emoji-item`)) {
-        const emoji = evt.target.value;
-        this._commentEmoji = emoji;
-
-        const commentEmojiELement = this._filmDetailsComponent.getElement()
-          .querySelector(`.film-details__add-emoji-label`);
-
-        clearElement(commentEmojiELement);
-        render(commentEmojiELement, new EmojiComponent(emoji));
-      }
-    };
-
-    subscribeOnEvents(this._filmDetailsComponent);
-
-    this._filmDetailsComponent.setCloseClickHandler(() => {
-      this._closeDetailsPopup();
-    });
-
-
-    const updateComments = (id, newData) => {
-      const comments = film.comments;
-
-      if (newData === null) {
-        this._viewersComments = comments.filter((comment) => comment.id !== id);
-      }
-
-      this._onDataChange(this, film, Object.assign({}, film, {
-        comments: this._viewersComments,
-      }));
-    };
-
-    this._filmDetailsComponent.setCommentSubmitHandler((evt) => {
-      if (evt.ctrlKey && evt.key === `Enter`) {
-        const newComment = {
-          id: String(new Date() + Math.random()),
-          reaction: this._commentEmoji,
-          author: getRandomArrayItem(commentAuthors),
-          date: new Date(),
-          comment: evt.target.value,
-        };
-
-        this._viewersComments.push(newComment);
-        updateComments(newComment.id, this._comments);
-      }
-    });
-
-
-    this._filmDetailsComponent.setEmojiChangeHandler(onEmojiChange);
-
-    this._filmDetailsComponent.setCommentDeleteClickHandler((evt) => {
-      evt.preventDefault();
-      const target = evt.target;
-
-      if (target.matches(`.film-details__comment-delete`)) {
-        const commentId = target.closest(`.film-details__comment`).dataset.id;
-        updateComments(commentId, null);
-      }
-    });
-
-    const openDetailsPopup = () => {
-      this._onViewChange();
-      this._filmDetailsComponent.reset();
-      append(this._filmDetailsComponent);
-      document.addEventListener(`keydown`, this._onEscKeydown);
-      subscribeOnEvents(this._filmDetailsComponent);
-
-      this._mode = Mode.EDIT;
-    };
-
-
-    render(this._container, this._filmComponent);
-
-    if (oldFilmDetailsComponent && oldFilmComponent) {
-      replace(this._filmComponent, oldFilmComponent);
-      replace(this._filmDetailsComponent, oldFilmDetailsComponent);
+    if (oldMovieComponent) {
+      replace(this._movieComponent, oldMovieComponent);
     } else {
-      render(this._container, this._filmComponent);
+      render(this._container, this._movieComponent);
     }
   }
 
+  _openDetailsPopup() {
+    this._api.getComments(this._movieID)
+      .then((loadedComments) => {
+        this._viewersComments = loadedComments;
+
+        this._movieDetailsComponent = new MovieDetailsComponent(this._movie, this._viewersComments);
+        this._onViewChange();
+
+        this._movieDetailsComponent.setAddToWatchlistClickHandler(() => {
+          const newMovie = MovieModel.clone(this._movie);
+          newMovie.userDetails.watchlist = !this._movie.userDetails.watchlist;
+          this._onDataChange(this, this._movie, newMovie);
+        });
+
+        this._movieDetailsComponent.setAddToWatchedClickHandler(() => {
+          const newMovie = MovieModel.clone(this._movie);
+          newMovie.userDetails.alreadyWatched = !this._movie.userDetails.alreadyWatched;
+          newMovie.userDetails.watchingDate = new Date();
+          this._onDataChange(this, this._movie, newMovie);
+        });
+
+        this._movieDetailsComponent.setAddToFavoriteClickHandler(() => {
+          const newMovie = MovieModel.clone(this._movie);
+          newMovie.userDetails.favorite = !this._movie.userDetails.favorite;
+          this._onDataChange(this, this._movie, newMovie);
+        });
+
+        this._movieDetailsComponent.setCloseClickHandler(() => {
+          this._closeDetailsPopup();
+        });
+
+        // const updateComments = (id, newData) => {
+        //   const comments = this._film.comments;
+
+        //   if (newData === null) {
+        //     this._viewersComments = comments.filter((comment) => comment.id !== id);
+        //   }
+
+        //   this._onDataChange(this, this._film, Object.assign({}, this._film, {
+        //     comments: this._viewersComments,
+        //   }));
+        // };
+
+        append(this._movieDetailsComponent);
+        document.addEventListener(`keydown`, this._onEscKeydown);
+        document.querySelector(`body`)
+          .classList.add(`hide-overflow`);
+      });
+  }
+  // const openDetailsPopup = () => {
+  //   console.log(`click`);
+  //   this._api.getComments(this._movieID)
+  //     .then((loadedComments) => {
+  //       this._viewersComments = loadedComments;
+
+  //       this._movieDetailsComponent = new MovieDetailsComponent(this._film, this._viewersComments);
+  //       this._onViewChange();
+
+
+  //       append(this._movieDetailsComponent);
+
+
+  //       // this._movieDetailsComponent.reset();
+  //       const onEmojiChange = (evt) => {
+  //         if (evt.target.matches(`.film-details__emoji-item`)) {
+  //           const emoji = evt.target.value;
+  //           this._commentEmoji = emoji;
+
+  //           const commentEmojiELement = this._movieDetailsComponent.getElement()
+  //             .querySelector(`.film-details__add-emoji-label`);
+
+  //           clearElement(commentEmojiELement);
+  //           render(commentEmojiELement, new EmojiComponent(emoji));
+  //         }
+  //       };
+
+  //       const updateComments = (id, newData) => {
+  //         const comments = this._film.comments;
+
+  //         if (newData === null) {
+  //           this._viewersComments = comments.filter((comment) => comment.id !== id);
+  //         }
+
+  //         this._onDataChange(this, this._film, Object.assign({}, this._film, {
+  //           comments: this._viewersComments,
+  //         }));
+  //       };
+
+
+  //       const onAddToFavoriteDetailsButtonClick = () => {
+  //         const newFilm = MovieModel.clone(this._film);
+  //         newFilm.userDetails.favorite = !this._film.userDetails.favorite;
+  //         this._onDataChange(this, this._film, newFilm);
+  //         this._film = newFilm;
+  //         console.log(this._movieDetailsComponent);
+  //         this._movieDetailsComponent.rerender();
+  //       };
+
+  //       this._movieDetailsComponent.setAddToFavoriteClickHandler(onAddToFavoriteDetailsButtonClick);
+
+  //       // subscribeOnEvents(this._movieDetailsComponent);
+
+  //       this._movieDetailsComponent.setCloseClickHandler(() => {
+  //         this._closeDetailsPopup();
+  //       });
+
+  //       this._movieDetailsComponent.setEmojiChangeHandler(onEmojiChange);
+
+  //       this._movieDetailsComponent.setCommentDeleteClickHandler((evt) => {
+  //         evt.preventDefault();
+  //         const target = evt.target;
+
+  //         if (target.matches(`.film-details__comment-delete`)) {
+  //           const commentId = target.closest(`.film-details__comment`).dataset.id;
+  //           updateComments(commentId, null);
+  //         }
+  //       });
+
+  //       this._movieDetailsComponent.setCommentSubmitHandler((evt) => {
+  //         if (evt.ctrlKey && evt.key === `Enter`) {
+  //           const newComment = {
+  //             id: String(new Date() + Math.random()),
+  //             reaction: this._commentEmoji,
+  //             author: getRandomArrayItem(commentAuthors),
+  //             date: new Date(),
+  //             comment: evt.target.value,
+  //           };
+
+  //           this._viewersComments.push(newComment);
+  //           updateComments(newComment.id, this._comments);
+  //         }
+  //       });
+
+  //       document.addEventListener(`keydown`, this._onEscKeydown);
+
+  //       this._mode = Mode.EDIT;
+  //     });
+  // };
+
+  // }
+
   setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
+    if (this._movieDetailsComponent) {
       this._closeDetailsPopup();
     }
   }
 
   destroy() {
-    remove(this._filmComponent);
-    remove(this._filmDetailsComponent);
-    document.removeEventListener(`keydown`, this._onEscKeydown);
+    remove(this._movieComponent);
+
+    if (this._movieDetailsComponent) {
+      remove(this._movieDetailsComponent);
+      document.removeEventListener(`keydown`, this._onEscKeydown);
+    }
   }
 
   _closeDetailsPopup() {
+    remove(this._movieDetailsComponent);
     document.removeEventListener(`keydown`, this._onEscKeydown);
-
-    if (document.contains(this._filmDetailsComponent.getElement())) {
-      remove(this._filmDetailsComponent);
-    }
-
-    this._mode = Mode.DEFAULT;
+    document.querySelector(`body`)
+      .classList.remove(`hide-overflow`);
   }
 
   _onEscKeydown(evt) {

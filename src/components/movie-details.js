@@ -1,10 +1,11 @@
-import {formatCommentDate, formateReleaseDate} from "../utils/common.js";
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import {formatCommentDate, formateReleaseDate} from "../utils/common";
+import AbstractSmartComponent from "./abstract-smart-component";
 import {encode} from "he";
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
-    const {id, reaction, author, date, comment: rawComment} = commentItem;
+
+    const {id, emotion, author, date, comment: rawComment} = commentItem;
 
     const commentDate = formatCommentDate(date);
     const comment = encode(rawComment);
@@ -12,7 +13,7 @@ const createCommentsMarkup = (comments) => {
     return (
       `<li class="film-details__comment" data-id="${id}">
         <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${reaction}.png" width="55" height="55" alt="emoji-${reaction}">
+          <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
         </span>
         <div>
           <p class="film-details__comment-text">${comment}</p>
@@ -35,7 +36,7 @@ const createGenresMarkup = (genres) => {
   }).join(`\n`);
 };
 
-const createFilmDetailsTemplate = (film) => {
+const createMovieDetailsTemplate = (movie, viewersComments) => {
   const {
     poster,
     title,
@@ -50,13 +51,13 @@ const createFilmDetailsTemplate = (film) => {
     actors,
     writers,
     country,
-    comments,
     userDetails: {
       watchlist,
       alreadyWatched,
       favorite,
     },
-  } = film;
+  } = movie;
+  const {comments} = viewersComments;
 
   const commentsCount = comments.length;
   const commentsMarkup = createCommentsMarkup(comments);
@@ -72,7 +73,7 @@ const createFilmDetailsTemplate = (film) => {
           </div>
           <div class="film-details__info-wrap">
             <div class="film-details__poster">
-              <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+              <img class="film-details__poster-img" src="./${poster}" alt="">
 
               <p class="film-details__age">${rated}</p>
             </div>
@@ -200,30 +201,28 @@ const createFilmDetailsTemplate = (film) => {
   );
 };
 
-export default class FilmDetails extends AbstractSmartComponent {
-  constructor(film) {
+export default class MovieDetails extends AbstractSmartComponent {
+  constructor(movie, comments) {
     super();
-    this._film = film;
-    this._userDetails = this._film.userDetails;
+    this._movie = movie;
+    this._userDetails = this._movie.userDetails;
     this._watchlist = this._userDetails.watchlist;
     this._alreadyWatched = this._userDetails.alreadyWatched;
     this._watchingDate = this._userDetails.watchingDate;
     this._favorite = this._userDetails.favorite;
-    this._comments = film.comments;
+    this._comments = comments;
 
     this._closeClickHandler = null;
     this._deleteCommentClickHandler = null;
     this._addCommentSubmitHandler = null;
     this._onEmojiChange = null;
 
+
     this.setEmojiChangeHandler();
-    this.setAddToWatchlistClickHandler();
-    this.setAddToWatchedClickHandler();
-    this.setAddToFavoriteClickHandler();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film, {
+    return createMovieDetailsTemplate(this._movie, {
       userDetails: {
         watchlist: this._watchlist,
         alreadyWatched: this._alreadyWatched,
@@ -239,22 +238,6 @@ export default class FilmDetails extends AbstractSmartComponent {
     this.setCommentDeleteClickHandler(this._deleteCommentClickHandler);
     this.setCommentSubmitHandler(this._addCommentSubmitHandler);
     this.setEmojiChangeHandler(this._onEmojiChange);
-    this.setAddToWatchlistClickHandler();
-    this.setAddToWatchedClickHandler();
-    this.setAddToFavoriteClickHandler();
-  }
-
-  reset() {
-    const film = this._film;
-    const userDetails = film.userDetails;
-
-    this._watchlist = userDetails.watchlist;
-    this._alreadyWatched = userDetails._alreadyWatched;
-    this._watchingDate = userDetails._watchingDate;
-    this._favorite = userDetails.favorite;
-    this._comments = film.comments;
-
-    this.rerender();
   }
 
   setCloseClickHandler(handler) {
