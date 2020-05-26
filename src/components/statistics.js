@@ -22,7 +22,7 @@ const createButtonsMarkup = (names, currentFilter) => {
     }).join(`\n`);
 };
 
-const createStatisticsTemplate = (userDetails, period) => {
+const createStatisticsTemplate = (userDetails, period, userRank) => {
   const {totalWatchedMovies, totalDuration, topGenre} = userDetails;
   const duration = moment.duration(totalDuration, `minutes`).format(`h mm`);
   const durationHours = duration.split(` `)[0] || 0;
@@ -34,7 +34,7 @@ const createStatisticsTemplate = (userDetails, period) => {
       <p class="statistic__rank">
         Your rank
         <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">Sci-Fighter</span>
+        <span class="statistic__rank-label">${userRank}</span>
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -66,15 +66,15 @@ const createStatisticsTemplate = (userDetails, period) => {
 };
 
 export default class Statistics extends AbstractComponent {
-  constructor(movies, {totalWatchedMovies, totalDuration, topGenre, filter}) {
+  constructor(movies, {totalWatchedMovies, totalDuration, topGenre, filter}, userRank) {
     super();
 
     this._movies = movies;
     this._filter = filter;
-
     this._totalWatchedMovies = totalWatchedMovies;
     this._totalDuration = totalDuration;
     this._topGenre = topGenre;
+    this._userRank = userRank;
 
     this.setStatFilterChangeHandler();
   }
@@ -84,7 +84,7 @@ export default class Statistics extends AbstractComponent {
       totalWatchedMovies: this._totalWatchedMovies,
       totalDuration: this._totalDuration,
       topGenre: this._topGenre,
-    }, this._filter);
+    }, this._filter, this._userRank);
   }
 
   hide() {

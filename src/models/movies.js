@@ -62,11 +62,11 @@ export default class Movies {
     this._dataChangeHandlers.push(handler);
   }
 
-  _callHandlers(handlers) {
-    handlers.forEach((handler) => handler());
-  }
-
   getWatchedMovies() {
     return this._movies.filter((movie) => movie.userDetails.alreadyWatched);
+  }
+
+  _callHandlers(handlers) {
+    handlers.forEach((handler) => handler());
   }
 }

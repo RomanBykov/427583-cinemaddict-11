@@ -2,6 +2,8 @@ import {formatCommentDate, formateReleaseDate} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
 import {encode} from "he";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
 
@@ -233,6 +235,10 @@ export default class MovieDetails extends AbstractSmartComponent {
     });
   }
 
+  updateComments(comments) {
+    this._comments = comments;
+  }
+
   recoveryListeners() {
     this.setCloseClickHandler(this._closeClickHandler);
     this.setCommentDeleteClickHandler(this._deleteCommentClickHandler);
@@ -281,5 +287,19 @@ export default class MovieDetails extends AbstractSmartComponent {
       .addEventListener(`keydown`, handler);
 
     this._addCommentSubmitHandler = handler;
+  }
+
+  disableForm(isDisabled) {
+    this.getElement().querySelector(`.film-details__comment-input`)
+      .disabled = isDisabled;
+  }
+
+  shake(id = null) {
+    const element = id ? this.getElement().querySelector(`.film-details__comment[data-id="${id}"]`) : this.getElement();
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      element.style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
