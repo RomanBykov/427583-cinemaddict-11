@@ -1,35 +1,35 @@
-import {FilterType, StatFilterType} from "../const.js";
+import {FilterType, StatFilterType} from "../const";
 
-export const getHistoryFilms = (films) => {
-  return films.filter((film) => film.userDetails.alreadyWatched);
+export const getHistoryMovies = (movies) => {
+  return movies.filter((movie) => movie.userDetails.alreadyWatched);
 };
 
-export const getNotHistoryFilms = (films) => {
-  return films.filter((film) => !film.userDetails.alreadyWatched);
+export const getNotHistoryMovies = (movies) => {
+  return movies.filter((movie) => !movie.userDetails.alreadyWatched);
 };
 
-export const getFavoriteFilms = (films) => {
-  return films.filter((film) => film.userDetails.favorite);
+export const getFavoriteMovies = (movies) => {
+  return movies.filter((movie) => movie.userDetails.favorite);
 };
 
-export const getWatchlistFilms = (films) => {
-  return films.filter((film) => film.userDetails.watchlist);
+export const getWatchlistMovies = (movies) => {
+  return movies.filter((movie) => movie.userDetails.watchlist);
 };
 
-export const getFilmsByFilter = (films, filterType) => {
+export const getMoviesByFilter = (movies, filterType) => {
 
   switch (filterType) {
     case FilterType.ALL:
-      return films;
+      return movies;
     case FilterType.HISTORY:
-      return getHistoryFilms(films);
+      return getHistoryMovies(movies);
     case FilterType.WATCHLIST:
-      return getWatchlistFilms(films);
+      return getWatchlistMovies(movies);
     case FilterType.FAVORITES:
-      return getFavoriteFilms(films);
+      return getFavoriteMovies(movies);
   }
 
-  return films;
+  return movies;
 };
 
 export const getStatsFilterName = (filterName) => {

@@ -1,10 +1,5 @@
-import AbstractComponent from "./abstract-component.js";
-
-export const SortType = {
-  DATE: `date`,
-  RATING: `rating`,
-  DEFAULT: `default`,
-};
+import AbstractComponent from "./abstract-component";
+import {SortType} from "../const";
 
 const createSortTemplate = () => {
   return (

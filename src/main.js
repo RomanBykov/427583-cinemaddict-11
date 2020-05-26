@@ -1,59 +1,69 @@
-import FilmsCountComponent from "./components/films-count.js";
-import FilmsComponent from "./components/films.js";
-import FilterController from "./controllers/filter.js";
-import NavigationComponent from "./components/navigation.js";
-import StatsButtonComponent from "./components/stats-button.js";
-import StatisticsController from "./controllers/statistics.js";
-import UserProfileComponent from "./components/user-profile.js";
-import PageController from "./controllers/page.js";
-import FilmsModel from "./models/movies.js";
-import {generateFilms} from "./mock/film.js";
-import {generateUser} from "./mock/user.js";
-import {render} from "./utils/render.js";
+import API from "./api";
+import MoviesCountComponent from "./components/movies-count";
+import MoviesComponent from "./components/movies";
+import FilterController from "./controllers/filter";
+import MoviesModel from "./models/movies";
+import NavigationComponent from "./components/navigation";
+import PageController from "./controllers/page";
+import StatsButtonComponent from "./components/stats-button";
+import StatisticsController from "./controllers/statistics";
+import UserProfileComponent from "./components/user-profile";
+import {generateUser} from "./mock/user";
+import {render} from "./utils/render";
 
-const FILM_CARDS_COUNT = 20;
+const AUTHORIZATION = `Basic NJCnjdNdcKLKDCNjkncjkdsnjdnjkcnjkNCJKD=`;
+const END_POINT = `https://11.ecmascript.pages.academy/cinemaddict/`;
+
+let totalMoviesCount = 0;
+
+const api = new API(END_POINT, AUTHORIZATION);
 
 const user = generateUser();
 const siteHeaderElement = document.querySelector(`.header`);
-render(siteHeaderElement, new UserProfileComponent(user));
-
-const films = generateFilms(FILM_CARDS_COUNT);
-const filmsModel = new FilmsModel();
-filmsModel.setFilms(films);
-
+const footerMoviesCountElement = document.querySelector(`.footer__statistics`);
 const siteMainElement = document.querySelector(`.main`);
 
+const moviesModel = new MoviesModel();
 const navigationComponent = new NavigationComponent();
-render(siteMainElement, navigationComponent);
-
-const filterController = new FilterController(navigationComponent.getElement(), filmsModel);
-
-filterController.render();
+const filterController = new FilterController(navigationComponent.getElement(), moviesModel);
 const statsButtonComponent = new StatsButtonComponent();
+const moviesComponent = new MoviesComponent();
+const pageController = new PageController(moviesComponent, moviesModel, api);
+
+
+render(siteHeaderElement, new UserProfileComponent(user));
+render(siteMainElement, navigationComponent);
+filterController.render();
 render(navigationComponent.getElement(), statsButtonComponent);
+render(siteMainElement, moviesComponent);
+pageController.renderLoading();
+pageController.renderSort();
+pageController.renderMoviesList();
 
-const filmsComponent = new FilmsComponent();
-render(siteMainElement, filmsComponent);
 
-const pageController = new PageController(filmsComponent, filmsModel);
-pageController.render();
+api.getMovies()
+  .then((movies) => {
+    moviesModel.setMovies(movies);
 
-const statisticsController = new StatisticsController(siteMainElement, filmsModel.getWatchedFilms());
-statisticsController.render();
-statisticsController.hide();
+    totalMoviesCount = movies.length;
 
-const footerFilmsCountElement = document.querySelector(`.footer__statistics`);
-const totalFilmsCount = films.length;
-render(footerFilmsCountElement, new FilmsCountComponent(totalFilmsCount));
+    const statisticsController = new StatisticsController(siteMainElement, moviesModel.getWatchedMovies());
+    render(footerMoviesCountElement, new MoviesCountComponent(totalMoviesCount));
 
-statsButtonComponent.setOnClickHandler((evt) => {
-  evt.preventDefault();
-
-  if (pageController.isVisible()) {
-    pageController.hide();
-    statisticsController.show();
-  } else {
-    pageController.show();
+    pageController.removeLoading();
+    pageController.renderLoadedMovies();
+    statisticsController.render();
     statisticsController.hide();
-  }
-});
+
+    statsButtonComponent.setOnClickHandler((evt) => {
+      evt.preventDefault();
+
+      if (pageController.isVisible()) {
+        pageController.hide();
+        statisticsController.show();
+      } else {
+        pageController.show();
+        statisticsController.hide();
+      }
+    });
+  });

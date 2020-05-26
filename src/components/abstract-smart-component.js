@@ -1,4 +1,4 @@
-import AbstractComponent from "./abstract-component.js";
+import AbstractComponent from "./abstract-component";
 
 export default class AbstractSmartComponent extends AbstractComponent {
   recoveryListeners() {
@@ -6,6 +6,7 @@ export default class AbstractSmartComponent extends AbstractComponent {
   }
 
   rerender() {
+    // debugger;
     const oldElement = this.getElement();
     const parent = oldElement.parentElement;
 

@@ -23,7 +23,7 @@ const createButtonsMarkup = (names, currentFilter) => {
 };
 
 const createStatisticsTemplate = (userDetails, period) => {
-  const {totalWatchedFilms, totalDuration, topGenre} = userDetails;
+  const {totalWatchedMovies, totalDuration, topGenre} = userDetails;
   const duration = moment.duration(totalDuration, `minutes`).format(`h mm`);
   const durationHours = duration.split(` `)[0] || 0;
   const durationMinutes = duration.split(` `)[1] || 0;
@@ -45,7 +45,7 @@ const createStatisticsTemplate = (userDetails, period) => {
       <ul class="statistic__text-list">
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">You watched</h4>
-          <p class="statistic__item-text">${totalWatchedFilms} <span class="statistic__item-description">movies</span></p>
+          <p class="statistic__item-text">${totalWatchedMovies} <span class="statistic__item-description">movies</span></p>
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Total duration</h4>
@@ -66,13 +66,13 @@ const createStatisticsTemplate = (userDetails, period) => {
 };
 
 export default class Statistics extends AbstractComponent {
-  constructor(films, {totalWatchedFilms, totalDuration, topGenre, filter}) {
+  constructor(movies, {totalWatchedMovies, totalDuration, topGenre, filter}) {
     super();
 
-    this._films = films;
+    this._movies = movies;
     this._filter = filter;
 
-    this._totalWatchedFilms = totalWatchedFilms;
+    this._totalWatchedMovies = totalWatchedMovies;
     this._totalDuration = totalDuration;
     this._topGenre = topGenre;
 
@@ -81,7 +81,7 @@ export default class Statistics extends AbstractComponent {
 
   getTemplate() {
     return createStatisticsTemplate({
-      totalWatchedFilms: this._totalWatchedFilms,
+      totalWatchedMovies: this._totalWatchedMovies,
       totalDuration: this._totalDuration,
       topGenre: this._topGenre,
     }, this._filter);

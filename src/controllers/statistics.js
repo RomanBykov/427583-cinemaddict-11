@@ -9,10 +9,10 @@ import "moment-duration-format";
 
 const BAR_HEIGHT = 50;
 
-const getAllGenresEntries = (films) => {
-  return films
-    .reduce((newArr, film) => {
-      newArr.push(film.genres);
+const getAllGenresEntries = (movies) => {
+  return movies
+    .reduce((newArr, movie) => {
+      newArr.push(movie.genres);
 
       return newArr;
     }, [])
@@ -28,9 +28,9 @@ const countGenres = (genres) => {
 
 
 export default class StatisticsController {
-  constructor(container, filmsModel) {
+  constructor(container, moviesModel) {
     this._container = container;
-    this._films = filmsModel;
+    this._movies = moviesModel;
 
     this._genres = [];
 
@@ -76,17 +76,17 @@ export default class StatisticsController {
       remove(this._statisticsComponent);
     }
 
-    const filteredFilms = this._getFilmsByDateRange(this._films, this._periodCount);
-    this._genres = this._getCountedGenres(filteredFilms);
+    const filteredMovies = this._getMoviesByDateRange(this._movies, this._periodCount);
+    this._genres = this._getCountedGenres(filteredMovies);
 
     const statisticsOptions = {
-      totalWatchedFilms: this._getWatchedFilmsCount(filteredFilms),
-      totalDuration: this._getTotalWatchedDuration(filteredFilms),
+      totalWatchedMovies: this._getWatchedMoviesCount(filteredMovies),
+      totalDuration: this._getTotalWatchedDuration(filteredMovies),
       topGenre: this._getTopGenre(this._genres),
       filter: this._filterName
     };
 
-    this._statisticsComponent = new StatisticsComponent(filteredFilms, statisticsOptions);
+    this._statisticsComponent = new StatisticsComponent(filteredMovies, statisticsOptions);
     this._statisticsComponent.setStatFilterChangeHandler(this._onFilterChange);
     render(container, this._statisticsComponent);
   }
@@ -116,25 +116,25 @@ export default class StatisticsController {
     return topGenre;
   }
 
-  _getCountedGenres(films) {
-    const allGenres = getAllGenresEntries(films);
+  _getCountedGenres(movies) {
+    const allGenres = getAllGenresEntries(movies);
     return countGenres(allGenres);
   }
 
-  _getWatchedFilmsCount(films) {
-    return films.length;
+  _getWatchedMoviesCount(movies) {
+    return movies.length;
   }
 
-  _getTotalWatchedDuration(films) {
-    return films.reduce((acc, film) => {
-      acc += film.duration;
+  _getTotalWatchedDuration(movies) {
+    return movies.reduce((acc, movie) => {
+      acc += movie.duration;
       return acc;
     }, 0);
   }
 
-  _getFilmsByDateRange(films, period) {
-    return films.filter((film) => {
-      const watchedDate = moment(moment(film.userDetails.watchingDate).toArray().slice(0, 3));
+  _getMoviesByDateRange(movies, period) {
+    return movies.filter((movie) => {
+      const watchedDate = moment(moment(movie.userDetails.watchingDate).toArray().slice(0, 3));
       const nowDate = moment(moment().toArray().slice(0, 3));
 
       return nowDate.diff(watchedDate, `days`) <= period;

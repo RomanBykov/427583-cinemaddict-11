@@ -23,7 +23,7 @@ export const getRandomArrayItem = (array) => {
   return array[getRandomIntInclusive(0, array.length - 1)];
 };
 
-export const formatFilmRuntime = (runtime) => {
+export const formatMovieRuntime = (runtime) => {
   return moment.duration(runtime, `minutes`).format(`h[h] mm[m]`);
 };
 
