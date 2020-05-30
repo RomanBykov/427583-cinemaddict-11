@@ -1,21 +1,22 @@
 import AbstractComponent from "./abstract-component";
-import {buttonClassNames} from "../const";
+import {ButtonLabel} from "../const";
 import {formatMovieRuntime} from "../utils/common";
 import moment from "moment";
 
-const cutDescription = (description) => {
-  const MAX_DESCRIPTION_LENGTH = 140;
+const MAX_DESCRIPTION_LENGTH = 140;
 
+const cutDescription = (description) => {
   return description.length > MAX_DESCRIPTION_LENGTH ? `${description.slice(0, MAX_DESCRIPTION_LENGTH - 1)}…` : description;
 };
 
 const createButtonMarkup = (name, isActive = true) => {
   const activeClassName = `film-card__controls-item--active`;
+  const buttonName = name.replace(/-/g, `_`).toUpperCase();
 
   return (
     `<button
       class="film-card__controls-item button film-card__controls-item--${name} ${isActive ? activeClassName : ``}"
-    >${buttonClassNames[name]}</button>`
+    >${ButtonLabel[buttonName]}</button>`
   );
 };
 
@@ -34,7 +35,7 @@ const createMovieTemplate = (movie) => {
 
   const formatedRuntime = formatMovieRuntime(duration);
   const commentsCount = comments.length;
-  const genre = genres[0];
+  const genre = genres[0] || ``;
   const release = moment(releaseDate).format(`YYYY`);
   const shortDescription = cutDescription(description);
 

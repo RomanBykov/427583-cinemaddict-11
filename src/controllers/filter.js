@@ -3,7 +3,7 @@ import {FilterType} from "../const";
 import {getMoviesByFilter} from "../utils/filter";
 import {replace, render} from "../utils/render";
 
-export default class FilterController {
+export default class Filter {
   constructor(container, movieModel) {
     this._container = container;
     this._movieModel = movieModel;

@@ -6,7 +6,7 @@ import NoDataComponent from "../components/no-data";
 import ShowMoreButtonComponent from "../components/show-more-button";
 import SortComponent, {} from "../components/sort";
 import {render, remove} from "../utils/render";
-import {SortType} from "../const";
+import {Mode as MovieControllerMode, SortType} from "../const";
 
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
@@ -14,7 +14,7 @@ const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
 const renderMovies = (container, movies, onDataChange, onViewChange, api) => {
   return movies.map((movie) => {
     const movieController = new MovieController(container, onDataChange, onViewChange, api);
-    movieController.render(movie);
+    movieController.render(movie, MovieControllerMode.DEFAULT);
 
     return movieController;
   });
@@ -26,7 +26,7 @@ const getSortedMovies = (movies, sortType, from, to) => {
 
   switch (sortType) {
     case SortType.DATE:
-      sortedMovies = showingMovies.sort((a, b) => b.releaseDate - a.releaseDate);
+      sortedMovies = showingMovies.sort((a, b) => parseInt(b.releaseDate, 10) - parseInt(a.releaseDate, 10));
       break;
     case SortType.RATING:
       sortedMovies = showingMovies.sort((a, b) => b.rating - a.rating);
@@ -40,11 +40,12 @@ const getSortedMovies = (movies, sortType, from, to) => {
 };
 
 
-export default class PageController {
+export default class Page {
   constructor(container, moviesModel, api) {
     this._container = container;
     this._moviesModel = moviesModel;
     this._api = api;
+    this._mode = MovieControllerMode.DEFAULT;
 
     this._showedMoviesControllers = [];
 
@@ -109,6 +110,7 @@ export default class PageController {
     this._container.show();
     this._toggleVisibility();
     this._updateMovies(SHOWING_MOVIES_COUNT_ON_START);
+    this._sortComponent.setSortTypeDefault();
   }
 
   hide() {
@@ -151,12 +153,17 @@ export default class PageController {
   }
 
   _onDataChange(movieController, oldData, newData) {
+    this._mode = movieController.getMode();
+
     this._api.updateMovie(oldData.id, newData)
       .then((updatedData) => {
         const isSuccess = this._moviesModel.updateMovie(oldData.id, updatedData);
 
         if (isSuccess) {
-          movieController.render(updatedData);
+          if (this._mode === MovieControllerMode.DEFAULT) {
+            this._updateMovies(this._showingMoviesCount);
+          }
+          movieController.render(updatedData, this._mode);
         }
       });
   }

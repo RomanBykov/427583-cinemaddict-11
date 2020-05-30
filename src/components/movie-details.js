@@ -6,9 +6,7 @@ const SHAKE_ANIMATION_TIMEOUT = 600;
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
-
     const {id, emotion, author, date, comment: rawComment} = commentItem;
-
     const commentDate = formatCommentDate(date);
     const comment = encode(rawComment);
 

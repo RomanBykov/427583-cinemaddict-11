@@ -14,10 +14,10 @@ export const userAvatars = [`bitmap@2x.png`];
 
 export const userRatings = [`Movie Buff`];
 
-export const buttonClassNames = {
-  [`add-to-watchlist`]: `Add to watchlist`,
-  [`mark-as-watched`]: `Mark as watched`,
-  [`favorite`]: `Mark as favorite`
+export const ButtonLabel = {
+  ADD_TO_WATCHLIST: `Add to watchlist`,
+  MARK_AS_WATCHED: `Mark as watched`,
+  FAVORITE: `Mark as favorite`
 };
 
 export const FilterType = {
@@ -36,9 +36,8 @@ export const FilterName = {
 
 export const HIDDEN_CLASS = `visually-hidden`;
 
-// TODO: придумать значение получше для ALL
 export const Period = {
-  ALL: 6365,
+  ALL: null,
   TODAY: 1,
   WEEK: 7,
   MONTH: 30,
@@ -59,4 +58,9 @@ export const SortType = {
   DATE: `date`,
   RATING: `rating`,
   DEFAULT: `default`,
+};
+
+export const Mode = {
+  DEFAULT: `default`,
+  DETAILS: `details`
 };

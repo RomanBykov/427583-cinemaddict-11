@@ -27,7 +27,7 @@ const countGenres = (genres) => {
 };
 
 
-export default class StatisticsController {
+export default class Statistics {
   constructor(container, moviesModel, userRank) {
     this._container = container;
     this._movies = moviesModel;
@@ -134,12 +134,16 @@ export default class StatisticsController {
   }
 
   _getMoviesByDateRange(movies, period) {
-    return movies.filter((movie) => {
-      const watchedDate = moment(moment(movie.userDetails.watchingDate).toArray().slice(0, 3));
-      const nowDate = moment(moment().toArray().slice(0, 3));
+    if (period !== null) {
+      return movies.filter((movie) => {
+        const watchedDate = moment(moment(movie.userDetails.watchingDate).toArray().slice(0, 3));
+        const nowDate = moment(moment().toArray().slice(0, 3));
 
-      return nowDate.diff(watchedDate, `days`) <= period;
-    });
+        return nowDate.diff(watchedDate, `days`) <= period;
+      });
+    } else {
+      return movies;
+    }
   }
 
   _resetChart() {

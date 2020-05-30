@@ -25,8 +25,9 @@ const createButtonsMarkup = (names, currentFilter) => {
 const createStatisticsTemplate = (userDetails, period, userRank) => {
   const {totalWatchedMovies, totalDuration, topGenre} = userDetails;
   const duration = moment.duration(totalDuration, `minutes`).format(`h mm`);
-  const durationHours = duration.split(` `)[0] || 0;
-  const durationMinutes = duration.split(` `)[1] || 0;
+  const [hours, minutes] = duration.split(``);
+  const durationHours = hours || 0;
+  const durationMinutes = minutes || 0;
   const buttonsMarkup = createButtonsMarkup(STAT_FILTER_VALUES, period);
 
   return (

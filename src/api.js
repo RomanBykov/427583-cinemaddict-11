@@ -29,8 +29,7 @@ export default class API {
 
   getComments(id) {
     return this._load({url: `comments/${id}`})
-      .then((response) => response.json())
-      .then(Comment.parseComments);
+      .then((response) => response.json());
   }
 
   updateMovie(id, movieData) {
@@ -44,9 +43,9 @@ export default class API {
       .then(MovieModel.parseMovie);
   }
 
-  addComment(movieID, commentData) {
+  addComment(movieId, commentData) {
     return this._load({
-      url: `comments/${movieID}`,
+      url: `comments/${movieId}`,
       method: Method.POST,
       body: JSON.stringify(commentData),
       headers: new Headers({"Content-Type": `application/json`}),
@@ -54,9 +53,9 @@ export default class API {
       .then((response) => response.json());
   }
 
-  deleteComment(commentID) {
+  deleteComment(commentId) {
     return this._load({
-      url: `comments/${commentID}`,
+      url: `comments/${commentId}`,
       method: Method.DELETE,
       headers: new Headers({"Content-Type": `application/json`}),
     });

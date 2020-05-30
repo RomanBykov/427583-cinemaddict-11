@@ -6,7 +6,7 @@ const createEmojiTemplate = (emoji) => {
   );
 };
 
-export default class EmojiComponent extends AbstractComponent {
+export default class Emoji extends AbstractComponent {
   constructor(emoji) {
     super();
 
