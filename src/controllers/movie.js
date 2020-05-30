@@ -2,13 +2,8 @@ import EmojiComponent from "../components/emoji";
 import MovieComponent from "../components/movie";
 import MovieDetailsComponent from "../components/movie-details";
 import MovieModel from "../models/movie";
-import {Mode, reactions} from "../const";
+import {Mode, reactions, DeleteButtonLabel} from "../const";
 import {remove, append, render, clearElement, replace} from "../utils/render";
-
-const ButtonLabel = {
-  DELETING: `Deleting…`,
-  DELETE: `Delete`
-};
 
 export default class Movie {
   constructor(container, onDataChange, onViewChange, api) {
@@ -33,9 +28,12 @@ export default class Movie {
     this._closeDetailsPopup = this._closeDetailsPopup.bind(this);
   }
 
+  getMode() {
+    return this._mode;
+  }
+
   render(movie, mode) {
     const oldMovieComponent = this._movieComponent;
-    const oldMovieDetailsComponent = this._movieDetailsComponent;
     this._mode = mode;
     this._movie = movie;
     this._movieId = movie.id;
@@ -80,19 +78,10 @@ export default class Movie {
       }
     };
 
-    switch (mode) {
-      case Mode.DEFAULT:
-        renderMovieComponent();
-        break;
-      case Mode.DETAILS:
-        renderMovieComponent();
-        if (oldMovieDetailsComponent) {
-          replace(this._movieDetailsComponent, oldMovieDetailsComponent);
-        } else {
-          this._openDetailsPopup();
-        }
+    renderMovieComponent();
 
-        break;
+    if (this._mode === Mode.DETAILS) {
+      this._openDetailsPopup();
     }
   }
 
@@ -109,10 +98,6 @@ export default class Movie {
       remove(this._movieDetailsComponent);
       document.removeEventListener(`keydown`, this._onEscKeydown);
     }
-  }
-
-  getMode() {
-    return this._mode;
   }
 
   _openDetailsPopup() {
@@ -168,7 +153,7 @@ export default class Movie {
 
           if (target.matches(`.film-details__comment-delete`)) {
             const commentId = target.closest(`.film-details__comment`).dataset.id;
-            target.textContent = ButtonLabel.DELETING;
+            target.textContent = DeleteButtonLabel.DELETING;
             target.disabled = true;
 
             this._api.deleteComment(commentId)
@@ -179,7 +164,7 @@ export default class Movie {
                 this._updateMovie(newMovie);
               })
               .catch(() => {
-                target.textContent = ButtonLabel.DELETE;
+                target.textContent = DeleteButtonLabel.DELETE;
                 target.disabled = false;
                 this._movieDetailsComponent.shake(commentId);
               });
@@ -216,7 +201,6 @@ export default class Movie {
         document.addEventListener(`keydown`, this._onEscKeydown);
         document.querySelector(`body`)
           .classList.add(`hide-overflow`);
-
       });
   }
 

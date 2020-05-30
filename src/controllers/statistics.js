@@ -43,6 +43,10 @@ export default class Statistics {
     this._onFilterChange = this._onFilterChange.bind(this);
   }
 
+  updateMovies(movies) {
+    this._movies = movies;
+  }
+
   render() {
     this._renderStatisticsComponent();
 

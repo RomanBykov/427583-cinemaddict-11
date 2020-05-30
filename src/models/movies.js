@@ -19,13 +19,8 @@ export default class Movies {
     return this._movies;
   }
 
-  setMovies(movies) {
-    this._movies = Array.from(movies);
-    this._callHandlers(this._dataChangeHandlers);
-  }
-
-  setComments(comments) {
-    this._comments = comments;
+  getWatchedMovies() {
+    return this._movies.filter((movie) => movie.userDetails.alreadyWatched);
   }
 
   getAllComments() {
@@ -34,6 +29,15 @@ export default class Movies {
 
   getCurrentMovieComments(id) {
     return this._comments[id];
+  }
+
+  setMovies(movies) {
+    this._movies = Array.from(movies);
+    this._callHandlers(this._dataChangeHandlers);
+  }
+
+  setComments(comments) {
+    this._comments = comments;
   }
 
   setFilter(filterType) {
@@ -62,9 +66,6 @@ export default class Movies {
     this._dataChangeHandlers.push(handler);
   }
 
-  getWatchedMovies() {
-    return this._movies.filter((movie) => movie.userDetails.alreadyWatched);
-  }
 
   _callHandlers(handlers) {
     handlers.forEach((handler) => handler());

@@ -1,4 +1,4 @@
-import {formatCommentDate, formateReleaseDate} from "../utils/common";
+import {formatCommentDate, formateReleaseDate, formatMovieRuntime} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
 import {encode} from "he";
 
@@ -58,11 +58,13 @@ const createMovieDetailsTemplate = (movie, viewersComments) => {
     },
   } = movie;
   const {comments} = viewersComments;
+  const genreLabel = genres.length > 1 ? `Genres` : `Genre`;
 
   const commentsCount = comments.length;
   const commentsMarkup = createCommentsMarkup(comments);
   const genresMarkup = createGenresMarkup(genres);
   const release = formateReleaseDate(releaseDate);
+  const formatedRuntime = formatMovieRuntime(duration);
 
   return (
     `<section class="film-details">
@@ -109,14 +111,14 @@ const createMovieDetailsTemplate = (movie, viewersComments) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${formatedRuntime}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
                   <td class="film-details__cell">${country}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">Genres</td>
+                  <td class="film-details__term">${genreLabel}</td>
                   <td class="film-details__cell">${genresMarkup}</td>
                 </tr>
               </table>
@@ -237,6 +239,20 @@ export default class MovieDetails extends AbstractSmartComponent {
     this._comments = comments;
   }
 
+  disableForm(isDisabled) {
+    this.getElement().querySelector(`.film-details__comment-input`)
+      .disabled = isDisabled;
+  }
+
+  shake(id = null) {
+    const element = id ? this.getElement().querySelector(`.film-details__comment[data-id="${id}"]`) : this.getElement();
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      element.style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   recoveryListeners() {
     this.setCloseClickHandler(this._closeClickHandler);
     this.setCommentDeleteClickHandler(this._deleteCommentClickHandler);
@@ -285,19 +301,5 @@ export default class MovieDetails extends AbstractSmartComponent {
       .addEventListener(`keydown`, handler);
 
     this._addCommentSubmitHandler = handler;
-  }
-
-  disableForm(isDisabled) {
-    this.getElement().querySelector(`.film-details__comment-input`)
-      .disabled = isDisabled;
-  }
-
-  shake(id = null) {
-    const element = id ? this.getElement().querySelector(`.film-details__comment[data-id="${id}"]`) : this.getElement();
-    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-
-    setTimeout(() => {
-      element.style.animation = ``;
-    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

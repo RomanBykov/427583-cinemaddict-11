@@ -6,7 +6,6 @@ export default class Movie {
     this.originalTitle = movieData.film_info.alternative_title;
     this.rating = movieData.film_info.total_rating;
     this.releaseDate = movieData.film_info.release.date;
-    // console.log(typeof this.releaseDate);
     this.duration = movieData.film_info.runtime;
     this.genres = movieData.film_info.genre;
     this.description = movieData.film_info.description;

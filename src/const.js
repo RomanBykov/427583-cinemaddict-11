@@ -1,23 +1,14 @@
 export const reactions = [`sleeping`, `smile`, `puke`, `angry`];
 
-export const commentAuthors = [`John Doe`, `Tim Macoveev`, `Samwell Tarly`, `Uncle Ben`, `Salma Hayek`];
-
-export const comments = [
-  `Booooooooooring`,
-  `Interesting setting and a good cast`,
-  `Very very old. Meh`,
-  `Almost two hours? Seriously?`,
-  `Very very old. Seriously?`
-];
-
-export const userAvatars = [`bitmap@2x.png`];
-
-export const userRatings = [`Movie Buff`];
-
 export const ButtonLabel = {
   ADD_TO_WATCHLIST: `Add to watchlist`,
   MARK_AS_WATCHED: `Mark as watched`,
   FAVORITE: `Mark as favorite`
+};
+
+export const DeleteButtonLabel = {
+  DELETING: `Deleting…`,
+  DELETE: `Delete`
 };
 
 export const FilterType = {

@@ -54,6 +54,7 @@ api.getMovies()
 
     pageController.removeLoading();
     pageController.renderLoadedMovies();
+    pageController.setStatisticsController(statisticsController);
     statisticsController.render();
     statisticsController.hide();
 

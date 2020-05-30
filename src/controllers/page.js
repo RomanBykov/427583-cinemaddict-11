@@ -49,6 +49,8 @@ export default class Page {
 
     this._showedMoviesControllers = [];
 
+    this._currentMovieController = null;
+
     this._isVisible = true;
 
     this._showingMoviesCount = SHOWING_MOVIES_COUNT_ON_START;
@@ -59,6 +61,7 @@ export default class Page {
     this._sortComponent = new SortComponent();
     this._showMoreButtonComponent = new ShowMoreButtonComponent();
     this._loadingComponent = new LoadingComponent();
+    this._statisticsController = null;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
@@ -69,6 +72,14 @@ export default class Page {
 
     this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._moviesModel.setFilterChangeHandler(this._onFilterChange);
+  }
+
+  setStatisticsController(statsController) {
+    this._statisticsController = statsController;
+  }
+
+  isVisible() {
+    return this._isVisible;
   }
 
   renderLoading() {
@@ -100,10 +111,6 @@ export default class Page {
     render(this._moviesListComponent.getElement(), this._mainMoviesListContainerComponent);
     this._renderMovies(movies.slice(0, this._showingMoviesCount), this._mainMoviesListContainerComponent.getElement());
     this._renderShowMoreButton();
-  }
-
-  isVisible() {
-    return this._isVisible;
   }
 
   show() {
@@ -155,20 +162,26 @@ export default class Page {
   _onDataChange(movieController, oldData, newData) {
     this._mode = movieController.getMode();
 
+    this._currentMovieController = movieController;
     this._api.updateMovie(oldData.id, newData)
       .then((updatedData) => {
         const isSuccess = this._moviesModel.updateMovie(oldData.id, updatedData);
 
         if (isSuccess) {
-          if (this._mode === MovieControllerMode.DEFAULT) {
-            this._updateMovies(this._showingMoviesCount);
-          }
+          this._updateMovies(this._showingMoviesCount);
           movieController.render(updatedData, this._mode);
+
+          const newWatchedMovies = this._moviesModel.getWatchedMovies();
+          this._statisticsController.updateMovies(newWatchedMovies);
         }
       });
   }
 
   _onViewChange() {
+    if (this._currentMovieController) {
+      this._currentMovieController.setDefaultView();
+    }
+
     this._showedMoviesControllers.forEach((movie) => {
       movie.setDefaultView();
     });
