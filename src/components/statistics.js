@@ -88,6 +88,10 @@ export default class Statistics extends AbstractComponent {
     }, this._filter, this._userRank);
   }
 
+  getChartContainer() {
+    return this.getElement().querySelector(`.statistic__chart`);
+  }
+
   hide() {
     super.hide();
   }
@@ -96,4 +100,5 @@ export default class Statistics extends AbstractComponent {
     this.getElement().querySelector(`.statistic__filters`)
       .addEventListener(`change`, handler);
   }
+
 }

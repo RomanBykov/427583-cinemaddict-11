@@ -1,8 +1,9 @@
 import {formatCommentDate, formateReleaseDate, formatMovieRuntime} from "../utils/common";
 import AbstractSmartComponent from "./abstract-smart-component";
 import {encode} from "he";
+import {DeleteButtonLabel} from "../const";
 
-const SHAKE_ANIMATION_TIMEOUT = 600;
+const SHAKE_ANIMATION_TIMEOUT = 0.6;
 
 const createCommentsMarkup = (comments) => {
   return comments.map((commentItem) => {
@@ -214,13 +215,10 @@ export default class MovieDetails extends AbstractSmartComponent {
     this._favorite = this._userDetails.favorite;
     this._comments = comments;
 
-    this._closeClickHandler = null;
-    this._deleteCommentClickHandler = null;
-    this._addCommentSubmitHandler = null;
-    this._onEmojiChange = null;
+    this._userComment = null;
+    this._deleteCommentButton = null;
 
-
-    this.setEmojiChangeHandler();
+    this._onCloseClick = null;
   }
 
   getTemplate() {
@@ -239,39 +237,60 @@ export default class MovieDetails extends AbstractSmartComponent {
     this._comments = comments;
   }
 
+  setErrorState() {
+    this._userComment.classList.add(`error-input`);
+  }
+
+  removeErrorState() {
+    this._userComment.classList.remove(`error-input`);
+  }
+
+  holdDeleteButton() {
+    this._deleteCommentButton.textContent = DeleteButtonLabel.DELETING;
+    this._deleteCommentButton.disabled = true;
+  }
+
+  unholdDeleteButton() {
+    this._deleteCommentButton.textContent = DeleteButtonLabel.DELETE;
+    this._deleteCommentButton.disabled = false;
+  }
+
   disableForm(isDisabled) {
     this.getElement().querySelector(`.film-details__comment-input`)
       .disabled = isDisabled;
   }
 
   shake(id = null) {
-    const element = id ? this.getElement().querySelector(`.film-details__comment[data-id="${id}"]`) : this.getElement();
-    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    const movieDetailsElement = this.getElement();
+    const shakingElement = id ? movieDetailsElement.querySelector(`.film-details__comment[data-id="${id}"]`) : movieDetailsElement;
+    shakingElement.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT}s`;
 
     setTimeout(() => {
-      element.style.animation = ``;
+      shakingElement.style.animation = ``;
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   recoveryListeners() {
-    this.setCloseClickHandler(this._closeClickHandler);
-    this.setCommentDeleteClickHandler(this._deleteCommentClickHandler);
-    this.setCommentSubmitHandler(this._addCommentSubmitHandler);
-    this.setEmojiChangeHandler(this._onEmojiChange);
+    this.setCloseClickHandler(this._onCloseClick);
   }
 
   setCloseClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`)
       .addEventListener(`click`, handler);
 
-    this._closeClickHandler = handler;
+    this._onCloseClick = handler;
   }
 
   setEmojiChangeHandler(handler) {
     this.getElement().querySelector(`.film-details__emoji-list`)
-      .addEventListener(`change`, handler);
+      .addEventListener(`change`, (evt) => {
+        if (evt.target.matches(`.film-details__emoji-item`)) {
+          const emoji = evt.target.value;
+          const commentEmojiELement = this.getElement().querySelector(`.film-details__add-emoji-label`);
 
-    this._onEmojiChange = handler;
+          handler(commentEmojiELement, emoji);
+        }
+      });
   }
 
   setAddToWatchlistClickHandler(handler) {
@@ -291,15 +310,30 @@ export default class MovieDetails extends AbstractSmartComponent {
 
   setCommentDeleteClickHandler(handler) {
     this.getElement().querySelector(`.film-details__comments-list`)
-      .addEventListener(`click`, handler);
+      .addEventListener(`click`, (evt) => {
+        evt.preventDefault();
 
-    this._deleteCommentClickHandler = handler;
+        if (evt.target.matches(`.film-details__comment-delete`)) {
+          this._deleteCommentButton = evt.target;
+          const commentId = this._deleteCommentButton.closest(`.film-details__comment`).dataset.id;
+          this.holdDeleteButton();
+
+          handler(commentId);
+        }
+      });
   }
 
   setCommentSubmitHandler(handler) {
     this.getElement().querySelector(`.film-details__comment-input`)
-      .addEventListener(`keydown`, handler);
+      .addEventListener(`keydown`, (evt) => {
 
-    this._addCommentSubmitHandler = handler;
+        if ((evt.ctrlKey || evt.metaKey) && evt.key === `Enter`) {
+          this._userComment = evt.target;
+          this.disableForm(true);
+          this.removeErrorState();
+
+          handler(this._userComment);
+        }
+      });
   }
 }

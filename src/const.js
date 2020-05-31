@@ -55,3 +55,8 @@ export const Mode = {
   DEFAULT: `default`,
   DETAILS: `details`
 };
+
+export const StatsMode = {
+  SHOWED: `shoved`,
+  HIDDEN: `hidden`
+};

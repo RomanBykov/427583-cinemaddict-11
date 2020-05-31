@@ -2,12 +2,21 @@ import StatisticsComponent from "../components/statistics";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {getKeyByValue} from "../utils/common";
-import {Period, StatFilterType} from "../const";
+import {Period, StatFilterType, StatsMode} from "../const";
 import {render, remove} from "../utils/render";
 import moment from "moment";
 import "moment-duration-format";
 
-const BAR_HEIGHT = 50;
+const CHART_OPTIONS = {
+  BAR_HEIGHT: 50,
+  FONT_COLOR: `#ffffff`,
+  BACKGROUND_COLOR: `#ffe800`,
+  FONT_SIZE: 20,
+  ALIGN: `start`,
+  OFFSET: 40,
+  PADDING: 100,
+  BAR_THICKNESS: 24
+};
 
 const getAllGenresEntries = (movies) => {
   return movies
@@ -26,7 +35,6 @@ const countGenres = (genres) => {
   }, {});
 };
 
-
 export default class Statistics {
   constructor(container, moviesModel, userRank) {
     this._container = container;
@@ -39,6 +47,7 @@ export default class Statistics {
     this._periodCount = Period.ALL;
     this._genresChart = null;
     this._statisticsComponent = null;
+    this._mode = StatsMode.HIDDEN;
 
     this._onFilterChange = this._onFilterChange.bind(this);
   }
@@ -47,13 +56,17 @@ export default class Statistics {
     this._movies = movies;
   }
 
+  getMode() {
+    return this._mode;
+  }
+
   render() {
     this._renderStatisticsComponent();
 
-    const chartContainer = this._statisticsComponent.getElement().querySelector(`.statistic__chart`);
+    const chartContainer = this._statisticsComponent.getChartContainer();
 
     const genresCount = Object.keys(this._genres).length;
-    chartContainer.height = BAR_HEIGHT * genresCount;
+    chartContainer.height = CHART_OPTIONS.BAR_HEIGHT * genresCount;
 
     this._resetChart();
     this._genresChart = this._applyChart(chartContainer, this._genres);
@@ -61,12 +74,14 @@ export default class Statistics {
 
   hide() {
     this._statisticsComponent.hide();
+    this._mode = StatsMode.HIDDEN;
   }
 
   show() {
     this.setToDefault();
     this.render();
     this._statisticsComponent.show();
+    this._mode = StatsMode.SHOWED;
   }
 
   setToDefault() {
@@ -167,35 +182,35 @@ export default class Statistics {
         labels: Object.keys(genres),
         datasets: [{
           data: Object.values(genres),
-          backgroundColor: `#ffe800`,
-          hoverBackgroundColor: `#ffe800`,
-          anchor: `start`
+          backgroundColor: CHART_OPTIONS.BACKGROUND_COLOR,
+          hoverBackgroundColor: CHART_OPTIONS.BACKGROUND_COLOR,
+          anchor: CHART_OPTIONS.ALIGN
         }]
       },
       options: {
         plugins: {
           datalabels: {
             font: {
-              size: 20
+              size: CHART_OPTIONS.FONT_SIZE
             },
-            color: `#ffffff`,
-            anchor: `start`,
-            align: `start`,
-            offset: 40,
+            color: CHART_OPTIONS.FONT_COLOR,
+            anchor: CHART_OPTIONS.ALIGN,
+            align: CHART_OPTIONS.ALIGN,
+            offset: CHART_OPTIONS.OFFSET,
           }
         },
         scales: {
           yAxes: [{
             ticks: {
-              fontColor: `#ffffff`,
-              padding: 100,
-              fontSize: 20
+              fontColor: CHART_OPTIONS.FONT_COLOR,
+              padding: CHART_OPTIONS.PADDING,
+              fontSize: CHART_OPTIONS.FONT_SIZE
             },
             gridLines: {
               display: false,
               drawBorder: false
             },
-            barThickness: 24
+            barThickness: CHART_OPTIONS.BAR_THICKNESS
           }],
           xAxes: [{
             ticks: {

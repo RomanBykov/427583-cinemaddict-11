@@ -11,7 +11,7 @@ export default class StatsButton extends AbstractComponent {
     return createStatsButtonTemplate();
   }
 
-  setOnClickHandler(handler) {
+  setClickHandler(handler) {
     this.getElement().addEventListener(`click`, handler);
   }
 }

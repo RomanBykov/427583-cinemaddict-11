@@ -58,15 +58,12 @@ api.getMovies()
     statisticsController.render();
     statisticsController.hide();
 
-    statsButtonComponent.setOnClickHandler((evt) => {
+    statsButtonComponent.setClickHandler((evt) => {
       evt.preventDefault();
 
       if (pageController.isVisible()) {
         pageController.hide();
         statisticsController.show();
-      } else {
-        pageController.show();
-        statisticsController.hide();
       }
     });
   });

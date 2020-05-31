@@ -6,7 +6,7 @@ import NoDataComponent from "../components/no-data";
 import ShowMoreButtonComponent from "../components/show-more-button";
 import SortComponent, {} from "../components/sort";
 import {render, remove} from "../utils/render";
-import {Mode as MovieControllerMode, SortType} from "../const";
+import {Mode as MovieControllerMode, SortType, StatsMode} from "../const";
 
 const SHOWING_MOVIES_COUNT_ON_START = 5;
 const SHOWING_MOVIES_COUNT_BY_BUTTON = 5;
@@ -154,8 +154,13 @@ export default class Page {
   }
 
   _updateMovies(count) {
+    const sortType = this._sortComponent.getSortType();
+    const movies = this._moviesModel.getMovies();
+    this._showingMoviesCount = count;
+    const sortedMovies = getSortedMovies(movies, sortType, 0, this._showingMoviesCount);
+
     this._removeMovies();
-    this._renderMovies(this._moviesModel.getMovies().slice(0, count), this._mainMoviesListContainerComponent.getElement());
+    this._renderMovies(sortedMovies, this._mainMoviesListContainerComponent.getElement());
     this._renderShowMoreButton();
   }
 
@@ -170,7 +175,6 @@ export default class Page {
         if (isSuccess) {
           this._updateMovies(this._showingMoviesCount);
           movieController.render(updatedData, this._mode);
-
           const newWatchedMovies = this._moviesModel.getWatchedMovies();
           this._statisticsController.updateMovies(newWatchedMovies);
         }
@@ -215,6 +219,10 @@ export default class Page {
   }
 
   _onFilterChange() {
+    if (this._statisticsController.getMode() === StatsMode.SHOWED) {
+      this._statisticsController.hide();
+      this.show();
+    }
     this._updateMovies(SHOWING_MOVIES_COUNT_ON_START);
   }
 }
